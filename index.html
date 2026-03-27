@@ -828,7 +828,7 @@ function airSend() {
         n_temp:     document.getElementById('air-temp').value||'',
         n_hours:    document.getElementById('air-hours').value||'',
         memo:       document.getElementById('air-memo').value,
-        imageData:  ph.data||null
+        imageUrl:   ph.url||''
     };
 
     const btn=document.getElementById('air-btn');
@@ -905,23 +905,54 @@ function eqTog(btn,id,val) {
     document.getElementById('eq-v-'+id).value=val;
 }
 
+// ── Cloudinary 설정 ──
+const CLOUDINARY_CLOUD = 'dwtqkhhra';
+const CLOUDINARY_PRESET = 'ktm-inspection';
+
 const photoStore={};
-function handlePhoto(input,pfx){
-    if(input.files&&input.files[0]){
-        const reader=new FileReader();
-        reader.onload=e=>{
-            photoStore[pfx]={data:e.target.result.split(',')[1],mime:e.target.result.substring(e.target.result.indexOf(':')+1,e.target.result.indexOf(';'))};
-            document.getElementById(pfx+'-photoPreview').src=e.target.result;
-            document.getElementById(pfx+'-photoLabel').classList.add('hidden');
-            document.getElementById(pfx+'-photoPreviewArea').classList.remove('hidden');
-        };
-        reader.readAsDataURL(input.files[0]);
+
+async function handlePhoto(input, pfx) {
+    if (!input.files || !input.files[0]) return;
+    const file = input.files[0];
+    const label = document.getElementById(pfx+'-photoLabel');
+    const previewArea = document.getElementById(pfx+'-photoPreviewArea');
+    const preview = document.getElementById(pfx+'-photoPreview');
+
+    // 미리보기 먼저 보여주기
+    const reader = new FileReader();
+    reader.onload = e => { preview.src = e.target.result; };
+    reader.readAsDataURL(file);
+    label.innerHTML = '⏳ 업로드 중...';
+
+    try {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', CLOUDINARY_PRESET);
+
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, {
+            method: 'POST',
+            body: formData
+        });
+        const data = await res.json();
+
+        if (data.secure_url) {
+            photoStore[pfx] = { url: data.secure_url };
+            label.classList.add('hidden');
+            previewArea.classList.remove('hidden');
+        } else {
+            throw new Error('업로드 실패');
+        }
+    } catch(e) {
+        label.innerHTML = '📷 사진 첨부 (다시 시도)';
+        alert('사진 업로드 실패. 다시 시도해주세요.');
     }
 }
+
 function removePhoto(pfx){
     document.getElementById(pfx+'-photoInput').value='';
     photoStore[pfx]=null;
     document.getElementById(pfx+'-photoLabel').classList.remove('hidden');
+    document.getElementById(pfx+'-photoLabel').innerHTML='📷 사진 첨부';
     document.getElementById(pfx+'-photoPreviewArea').classList.add('hidden');
 }
 
@@ -936,7 +967,7 @@ function eqSend(){
     const nums={};
     data.numerics.forEach(n=>{nums[n.id]=document.getElementById('eq-'+n.id)?.value||'';});
     const ph=photoStore['eq']||{};
-    const payload={date:document.getElementById('eq-date').value,inspector,machine,memo:document.getElementById('eq-memo').value,imageData:ph.data||null,...checks,...nums};
+    const payload={date:document.getElementById('eq-date').value,inspector,machine,memo:document.getElementById('eq-memo').value,imageUrl:ph.url||'',...checks,...nums};
     const btn=document.getElementById('eq-btn');const loader=document.getElementById('eq-loader');const txt=document.getElementById('eq-btnTxt');
     btn.disabled=true;loader.classList.remove('hidden');txt.innerText='전송 중...';
     fetch(GS_EQUIP,{method:'POST',mode:'no-cors',body:JSON.stringify(payload)})
@@ -984,7 +1015,7 @@ function prSend(){
     if(!sel||sel.value===''){alert('설비명을 선택하세요.');return;}
     if(!inspector){alert('점검자를 선택하세요.');return;}
     const ph=photoStore['pr']||{};
-    const payload={date:document.getElementById('pr-date').value,machine:sel.value,inspector,c_safety:document.getElementById('pr-v-safety').value||'미점검',c_ok:document.getElementById('pr-v-ok').value||'미점검',c_oil:document.getElementById('pr-v-oil').value||'미점검',c_clamp:document.getElementById('pr-v-clamp').value||'미점검',c_vs:document.getElementById('pr-v-vs').value||'미점검',m_air:document.getElementById('pr-air').value||'0',m_clutch:document.getElementById('pr-clutch').value||'0',m_volt:document.getElementById('pr-volt').value||'0',memo:document.getElementById('pr-memo').value,signature:isCanvasBlank()?'':canvas.toDataURL('image/png'),imageData:ph.data||null};
+    const payload={date:document.getElementById('pr-date').value,machine:sel.value,inspector,c_safety:document.getElementById('pr-v-safety').value||'미점검',c_ok:document.getElementById('pr-v-ok').value||'미점검',c_oil:document.getElementById('pr-v-oil').value||'미점검',c_clamp:document.getElementById('pr-v-clamp').value||'미점검',c_vs:document.getElementById('pr-v-vs').value||'미점검',m_air:document.getElementById('pr-air').value||'0',m_clutch:document.getElementById('pr-clutch').value||'0',m_volt:document.getElementById('pr-volt').value||'0',memo:document.getElementById('pr-memo').value,signature:isCanvasBlank()?'':canvas.toDataURL('image/png'),imageUrl:ph.url||''};
     const btn=document.getElementById('pr-btn');const loader=document.getElementById('pr-loader');const txt=document.getElementById('pr-btnTxt');
     btn.disabled=true; txt.textContent='전송 중...'; loader.classList.remove('hidden');
     fetch(GS_PRESS,{method:'POST',mode:'no-cors',body:JSON.stringify(payload)})
@@ -1007,7 +1038,7 @@ function rdSetAllPass(){ RD_ITEMS.forEach(i=>rdTog(i.id,'양호')); }
 function rdSend(){
     const results={}; RD_ITEMS.forEach(i=>{results['item'+i.id]=document.getElementById('rd-val-'+i.id).value||'미점검';});
     const ph=photoStore['rd']||{};
-    const payload={date:document.getElementById('rd-date').value,inspector:document.getElementById('rd-inspector').value,machine:document.getElementById('rd-machineNo').value,memo:document.getElementById('rd-memo').value,imageData:ph.data||null,...results};
+    const payload={date:document.getElementById('rd-date').value,inspector:document.getElementById('rd-inspector').value,machine:document.getElementById('rd-machineNo').value,memo:document.getElementById('rd-memo').value,imageUrl:ph.url||'',...results};
     const btn=document.getElementById('rd-btn');
     const loader=document.getElementById('rd-loader');
     const txt=document.getElementById('rd-btnTxt');
