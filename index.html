@@ -331,7 +331,7 @@
             </div>
             <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
                 <label class="block text-sm font-bold text-slate-700 mb-2">📸 현장 이상유무 사진 (선택)</label>
-                <input type="file" id="eq-photoInput" accept="image/*" capture="environment" class="hidden" onchange="handlePhoto(this,'eq')">
+                <input type="file" id="eq-photoInput" accept="image/*" class="hidden" onchange="handlePhoto(this,'eq')">
                 <label for="eq-photoInput" class="cursor-pointer flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-slate-300 rounded-xl bg-slate-50 hover:bg-slate-100 transition" id="eq-photoLabel">
                     <i class="fas fa-camera text-3xl text-slate-400 mb-2"></i>
                     <span class="text-xs text-slate-400">여기를 눌러 사진을 찍으세요</span>
@@ -432,7 +432,7 @@
                     </div>
                     <div class="bg-gray-50 p-3 rounded border">
                         <label class="block text-xs font-bold text-gray-500 mb-2">📸 현장 사진 첨부 (선택)</label>
-                        <input type="file" id="pr-photoInput" accept="image/*" capture="environment" class="hidden" onchange="handlePhoto(this,'pr')">
+                        <input type="file" id="pr-photoInput" accept="image/*" class="hidden" onchange="handlePhoto(this,'pr')">
                         <label for="pr-photoInput" id="pr-photoLabel" class="cursor-pointer flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-gray-300 rounded-xl bg-white hover:bg-gray-100 transition">
                             <i class="fas fa-camera text-2xl text-gray-400 mb-1"></i>
                             <span class="text-xs text-gray-400 font-bold">여기를 눌러 사진 촬영 또는 선택</span>
@@ -508,7 +508,7 @@
                 <!-- 사진 촬영 기능 -->
                 <div class="mb-6 bg-gray-50 p-3 rounded-xl border border-gray-200">
                     <label class="block text-sm font-bold text-gray-700 mb-2">📸 현장 사진 첨부 (선택)</label>
-                    <input type="file" id="rd-photoInput" accept="image/*" capture="environment" class="hidden" onchange="handlePhoto(this,'rd')">
+                    <input type="file" id="rd-photoInput" accept="image/*" class="hidden" onchange="handlePhoto(this,'rd')">
                     <label for="rd-photoInput" id="rd-photoLabel" class="cursor-pointer flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-gray-300 rounded-xl bg-white hover:bg-gray-100 transition">
                         <i class="fas fa-camera text-2xl text-gray-400 mb-1"></i>
                         <span class="text-xs text-gray-400 font-bold">여기를 눌러 사진 촬영 또는 선택</span>
@@ -682,7 +682,7 @@
         <div class="max-w-md mx-auto px-3 mb-4">
             <div class="bg-white rounded-2xl shadow-sm border border-green-100 p-4">
                 <label class="block text-sm font-bold text-slate-700 mb-2">📸 이상 사진 첨부 (선택)</label>
-                <input type="file" id="air-photoInput" accept="image/*" capture="environment" class="hidden" onchange="handlePhoto(this,'air')">
+                <input type="file" id="air-photoInput" accept="image/*" class="hidden" onchange="handlePhoto(this,'air')">
                 <label for="air-photoInput" class="cursor-pointer flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-green-200 rounded-xl bg-green-50 hover:bg-green-100 transition" id="air-photoLabel">
                     <i class="fas fa-camera text-2xl text-green-400 mb-1"></i>
                     <span class="text-xs text-green-500 font-bold">이상 발생 시 사진 촬영</span>
@@ -818,6 +818,7 @@ function airSend() {
     }
 
     const ph = photoStore['air']||{};
+    if(ph.uploading){alert('📷 사진 업로드 중입니다.\n잠시 후 다시 전송해주세요.');return;}
     const payload = {
         date, inspector,
         c_oil:      checks[0],
@@ -918,6 +919,15 @@ async function handlePhoto(input, pfx) {
     const previewArea = document.getElementById(pfx+'-photoPreviewArea');
     const preview = document.getElementById(pfx+'-photoPreview');
 
+    // 요소가 없으면(hidden div 등) 중단
+    if (!label || !previewArea || !preview) {
+        console.error('[handlePhoto] 요소를 찾을 수 없음:', pfx);
+        return;
+    }
+
+    // 업로드 중 플래그 설정
+    photoStore[pfx] = { uploading: true, url: '' };
+
     // 미리보기 먼저 보여주기
     const reader = new FileReader();
     reader.onload = e => { preview.src = e.target.result; };
@@ -936,13 +946,14 @@ async function handlePhoto(input, pfx) {
         const data = await res.json();
 
         if (data.secure_url) {
-            photoStore[pfx] = { url: data.secure_url };
+            photoStore[pfx] = { uploading: false, url: data.secure_url };
             label.classList.add('hidden');
             previewArea.classList.remove('hidden');
         } else {
             throw new Error('업로드 실패');
         }
     } catch(e) {
+        photoStore[pfx] = null;
         label.innerHTML = '📷 사진 첨부 (다시 시도)';
         alert('사진 업로드 실패. 다시 시도해주세요.');
     }
@@ -961,12 +972,13 @@ function eqSend(){
     let inspector=document.getElementById('eq-inspSel').value;
     if(inspector==='직접입력') inspector=document.getElementById('eq-inspTxt').value;
     if(!machine||!inspector){alert('설비와 점검자를 확인해주세요.');return;}
+    const ph=photoStore['eq']||{};
+    if(ph.uploading){alert('📷 사진 업로드 중입니다.\n잠시 후 다시 전송해주세요.');return;}
     const data=EQ_MACHINES[machine];
     const checks={};
     data.checks.forEach(c=>{checks[c.id]=document.getElementById('eq-v-'+c.id)?.value||'';});
     const nums={};
-    data.numerics.forEach(n=>{nums[n.id]=document.getElementById('eq-'+n.id)?.value||'';});
-    const ph=photoStore['eq']||{};
+    data.numerics.forEach(n=>{nums[n.id]=document.getElementById('eq-'+n.id)?.value||'';}); 
     const payload={date:document.getElementById('eq-date').value,inspector,machine,memo:document.getElementById('eq-memo').value,imageUrl:ph.url||'',...checks,...nums};
     const btn=document.getElementById('eq-btn');const loader=document.getElementById('eq-loader');const txt=document.getElementById('eq-btnTxt');
     btn.disabled=true;loader.classList.remove('hidden');txt.innerText='전송 중...';
@@ -1015,6 +1027,7 @@ function prSend(){
     if(!sel||sel.value===''){alert('설비명을 선택하세요.');return;}
     if(!inspector){alert('점검자를 선택하세요.');return;}
     const ph=photoStore['pr']||{};
+    if(ph.uploading){alert('📷 사진 업로드 중입니다.\n잠시 후 다시 전송해주세요.');return;}
     const payload={date:document.getElementById('pr-date').value,machine:sel.value,inspector,c_safety:document.getElementById('pr-v-safety').value||'미점검',c_ok:document.getElementById('pr-v-ok').value||'미점검',c_oil:document.getElementById('pr-v-oil').value||'미점검',c_clamp:document.getElementById('pr-v-clamp').value||'미점검',c_vs:document.getElementById('pr-v-vs').value||'미점검',m_air:document.getElementById('pr-air').value||'0',m_clutch:document.getElementById('pr-clutch').value||'0',m_volt:document.getElementById('pr-volt').value||'0',memo:document.getElementById('pr-memo').value,signature:isCanvasBlank()?'':canvas.toDataURL('image/png'),imageUrl:ph.url||''};
     const btn=document.getElementById('pr-btn');const loader=document.getElementById('pr-loader');const txt=document.getElementById('pr-btnTxt');
     btn.disabled=true; txt.textContent='전송 중...'; loader.classList.remove('hidden');
@@ -1038,6 +1051,7 @@ function rdSetAllPass(){ RD_ITEMS.forEach(i=>rdTog(i.id,'양호')); }
 function rdSend(){
     const results={}; RD_ITEMS.forEach(i=>{results['item'+i.id]=document.getElementById('rd-val-'+i.id).value||'미점검';});
     const ph=photoStore['rd']||{};
+    if(ph.uploading){alert('📷 사진 업로드 중입니다.\n잠시 후 다시 전송해주세요.');return;}
     const payload={date:document.getElementById('rd-date').value,inspector:document.getElementById('rd-inspector').value,machine:document.getElementById('rd-machineNo').value,memo:document.getElementById('rd-memo').value,imageUrl:ph.url||'',...results};
     const btn=document.getElementById('rd-btn');
     const loader=document.getElementById('rd-loader');
