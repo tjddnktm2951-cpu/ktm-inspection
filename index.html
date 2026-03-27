@@ -207,6 +207,64 @@
             border-radius:20px; padding:4px 12px;
             font-size:11px; font-weight:700; color:#065f46;
         }
+
+        /* ── 사진 팝업 모달 ── */
+        .img-popup-overlay {
+            display:none; position:fixed; inset:0; z-index:9000;
+            background:rgba(0,0,0,.88); align-items:center; justify-content:center;
+        }
+        .img-popup-overlay.show { display:flex; }
+        .img-popup-box {
+            position:relative; display:flex; flex-direction:column;
+            align-items:center; gap:14px; max-width:92vw;
+        }
+        .img-popup-box img {
+            max-width:90vw; max-height:74vh; border-radius:14px;
+            display:block; box-shadow:0 8px 40px rgba(0,0,0,.6);
+        }
+        .img-popup-close {
+            position:absolute; top:-18px; right:-18px;
+            width:38px; height:38px; background:#ef4444; color:white;
+            border:none; border-radius:50%; font-size:20px; cursor:pointer;
+            font-weight:bold; display:flex; align-items:center; justify-content:center;
+            box-shadow:0 2px 10px rgba(0,0,0,.35);
+        }
+        .img-popup-print {
+            padding:12px 36px; background:#1155ff; color:white;
+            border:none; border-radius:10px; font-size:15px; font-weight:700;
+            cursor:pointer; letter-spacing:.3px;
+        }
+        .img-popup-print:hover { background:#0044dd; }
+        .img-popup-label {
+            color:rgba(255,255,255,.55); font-size:11px; text-align:center;
+        }
+
+        /* ── 호버 미리보기 ── */
+        #hoverPreview {
+            position:fixed; z-index:8999; display:none; pointer-events:none;
+            background:white; border-radius:10px;
+            box-shadow:0 8px 32px rgba(0,0,0,.45); padding:8px;
+            border:1px solid #e2e8f0;
+        }
+        #hoverPreview img { max-width:260px; max-height:210px; display:block; border-radius:6px; }
+
+        /* ── 기록 조회 페이지 ── */
+        .vtable { width:100%; border-collapse:collapse; font-size:12px; }
+        .vtable th {
+            background:#1e3a5f; color:white; padding:9px 7px;
+            text-align:center; white-space:nowrap; font-size:11px;
+        }
+        .vtable td {
+            padding:8px 7px; border-bottom:1px solid #e2e8f0;
+            text-align:center; white-space:nowrap; font-size:11px;
+        }
+        .vtable tr:hover td { background:#f0f7ff; }
+        .photo-ic {
+            font-size:22px; cursor:pointer; display:inline-block;
+            transition:transform .15s;
+        }
+        .photo-ic:hover { transform:scale(1.35); }
+        .view-empty { padding:48px; text-align:center; color:#94a3b8; font-size:13px; }
     </style>
 </head>
 <body>
@@ -265,6 +323,16 @@
                 <span class="card-sub">AIR COMPRESSOR CHECK</span>
             </div>
             <span class="card-arrow" style="color:rgba(0,200,130,.4)">▶</span>
+        </div>
+        <div class="nav-card" onclick="openPage('pg-view')" style="border-color:rgba(180,120,255,.35);background:rgba(20,8,45,.85);">
+            <div class="card-icon-wrap" style="background:linear-gradient(135deg,rgba(80,30,140,.9),rgba(40,10,80,.95));border-right-color:rgba(150,80,255,.25);">
+                <span class="icon">📋</span>
+            </div>
+            <div class="card-body">
+                <span class="card-label" style="color:#d8c8ff;">점검 기록 조회</span>
+                <span class="card-sub" style="color:#4a3070;">RECORD VIEWER</span>
+            </div>
+            <span class="card-arrow" style="color:rgba(160,100,255,.4)">▶</span>
         </div>
     </div>
 </div>
@@ -706,13 +774,60 @@
     </div>
 </div>
 
+<!-- ════════════ 점검 기록 조회 ════════════ -->
+<div id="pg-view" class="page scroll-page">
+    <div class="back-bar">
+        <div class="back-btn" onclick="goHome()">← 홈으로</div>
+        <div class="page-badge-txt" style="color:#b090ff;">점검 기록 조회</div>
+    </div>
+    <div style="background:#f1f5f9;padding-top:96px;min-height:100vh;padding-bottom:60px;padding-left:10px;padding-right:10px;">
+        <div class="max-w-3xl mx-auto">
+            <!-- 툴바 -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-3 mb-3 flex flex-wrap gap-2 items-center">
+                <select id="view-type" class="border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold bg-slate-50 outline-none">
+                    <option value="equip">설비 점검</option>
+                    <option value="press">프레스 점검</option>
+                    <option value="radial">레디알 점검</option>
+                    <option value="air">에어 컴프레서</option>
+                </select>
+                <button onclick="loadRecords()" class="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded-lg font-bold text-sm active:scale-95 transition">
+                    🔍 조회
+                </button>
+                <span id="view-status" class="text-xs text-slate-400 ml-1"></span>
+                <span class="text-xs text-slate-300 ml-auto hidden md:block">📷 아이콘에 마우스를 올리면 미리보기, 클릭하면 확대</span>
+            </div>
+            <!-- 테이블 -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-auto">
+                <div id="view-table-wrap">
+                    <p class="view-empty">유형을 선택하고 <strong>조회</strong> 버튼을 누르세요</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ════════════ 사진 팝업 모달 ════════════ -->
+<div class="img-popup-overlay" id="imgPopupOverlay" onclick="popupBgClick(event)">
+    <div class="img-popup-box">
+        <button class="img-popup-close" onclick="closeImgPopup()" title="닫기">×</button>
+        <img id="imgPopupImg" src="" alt="점검 사진">
+        <button class="img-popup-print" onclick="printPhoto()">🖨️ 인쇄하기</button>
+        <p class="img-popup-label">클릭 외부 영역 또는 × 버튼으로 닫기</p>
+    </div>
+</div>
+
+<!-- ════════════ 호버 미리보기 ════════════ -->
+<div id="hoverPreview">
+    <img id="hoverPreviewImg" src="" alt="미리보기">
+</div>
+
 <script>
 /* ── 구글 스크립트 URL ── */
-const GS_EQUIP  = "https://script.google.com/macros/s/AKfycbwvz-9fig38ycw7Ttin57YHTG5fJwpG7CoYn1PM_jV8TB7F3-86s7E4RuYQGmsSx1DRfA/exec";
-const GS_PRESS  = "https://script.google.com/macros/s/AKfycbzFEJkCCXRX_ZWAkNGz-7807-k4bMChKypBqr1HVrDSf7vdC5pYmrFxQj24PHqqGp1Q/exec";
-const GS_RADIAL = "https://script.google.com/macros/s/AKfycbybS5fG_AGajxV5leyLjBl6Wi1N2WKod3VLmYSdFL5IM85mJZAVgPHE-385r-cHHaqqMA/exec";
-// ▼ 에어 컴프레서용 구글 시트 URL (나중에 연결할 때 여기 붙여넣기)
-const GS_AIR    = "https://script.google.com/macros/s/AKfycby9dRMDX5s0BBF9is91qsM2m6RnNqIn6_fzEd2PpezOWH15vOBrGJdQDk-NgNNUu2dugw/exec";
+/* ══════════════════════════════════════════════════════
+   ★ 아래 URL을 새로 배포한 통합 Apps Script URL로 교체 ★
+   (Code.gs 배포 후 받은 웹 앱 URL을 붙여넣으세요)
+   ══════════════════════════════════════════════════════ */
+const GS_URL = "https://script.google.com/macros/s/AKfycbxV5mQfpFwXHA9ExRjaPlCrQgRLkXHdIIxxUjryTfiSq6jV-98jZfTIwqzJiF2akBBSZQ/exec";
 
 /* ── 이미지 데이터 (실제 현장 사진) ── */
 const AIR_IMGS = {
@@ -829,7 +944,8 @@ function airSend() {
         n_temp:     document.getElementById('air-temp').value||'',
         n_hours:    document.getElementById('air-hours').value||'',
         memo:       document.getElementById('air-memo').value,
-        imageUrl:   ph.url||''
+        formType:   'air',
+        imageBase64:(ph&&ph.base64)||''
     };
 
     const btn=document.getElementById('air-btn');
@@ -838,17 +954,9 @@ function airSend() {
     btn.disabled=true; loader.classList.remove('hidden'); txt.textContent='전송 중...';
 
     // GS_AIR URL이 설정되지 않은 경우 알림
-    if(GS_AIR.includes('YOUR_')) {
-        setTimeout(()=>{
-            alert('✅ 점검 완료!\n\n⚠️ 구글 시트 연결이 필요합니다.\n개발팀에 Google Script URL 등록을 요청해주세요.');
-            goHome();
-            btn.disabled=false; loader.classList.add('hidden');
-            txt.innerHTML='<i class="fas fa-paper-plane"></i> 점검 완료 및 전송';
-        },1000);
-        return;
-    }
+    
 
-    fetch(GS_AIR, {method:'POST', mode:'no-cors', body:JSON.stringify(payload)})
+    fetch(GS_URL, {method:'POST', mode:'no-cors', body:JSON.stringify(payload)})
     .then(()=>{ alert('✅ 에어 컴프레서 점검 전송 완료!'); goHome(); })
     .catch(()=>{ alert('❌ 전송 실패. 네트워크를 확인해주세요.'); })
     .finally(()=>{
@@ -907,64 +1015,54 @@ function eqTog(btn,id,val) {
 }
 
 // ── Cloudinary 설정 ──
-const CLOUDINARY_CLOUD = 'dwtqkhhra';
-const CLOUDINARY_PRESET = 'ktm-inspection';
+const photoStore = {};
 
-const photoStore={};
+/* ── 이미지 압축 (canvas 리사이즈) ── */
+function compressImage(file, maxPx, quality) {
+    return new Promise(resolve => {
+        const reader = new FileReader();
+        reader.onload = e => {
+            const img = new Image();
+            img.onload = () => {
+                let w = img.width, h = img.height;
+                if (w > maxPx || h > maxPx) {
+                    if (w > h) { h = Math.round(h * maxPx / w); w = maxPx; }
+                    else       { w = Math.round(w * maxPx / h); h = maxPx; }
+                }
+                const canvas = document.createElement('canvas');
+                canvas.width = w; canvas.height = h;
+                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                resolve(canvas.toDataURL('image/jpeg', quality));
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+}
 
+/* ── 사진 선택/촬영 ── */
 async function handlePhoto(input, pfx) {
     if (!input.files || !input.files[0]) return;
     const file = input.files[0];
-    const label = document.getElementById(pfx+'-photoLabel');
-    const previewArea = document.getElementById(pfx+'-photoPreviewArea');
-    const preview = document.getElementById(pfx+'-photoPreview');
+    const label       = document.getElementById(pfx + '-photoLabel');
+    const previewArea = document.getElementById(pfx + '-photoPreviewArea');
+    const preview     = document.getElementById(pfx + '-photoPreview');
+    if (!label || !previewArea || !preview) return;
 
-    // 요소가 없으면(hidden div 등) 중단
-    if (!label || !previewArea || !preview) {
-        console.error('[handlePhoto] 요소를 찾을 수 없음:', pfx);
-        return;
-    }
-
-    // 업로드 중 플래그 설정
-    photoStore[pfx] = { uploading: true, url: '' };
-
-    // 미리보기 먼저 보여주기
-    const reader = new FileReader();
-    reader.onload = e => { preview.src = e.target.result; };
-    reader.readAsDataURL(file);
-    label.innerHTML = '⏳ 업로드 중...';
-
-    try {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('upload_preset', CLOUDINARY_PRESET);
-
-        const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, {
-            method: 'POST',
-            body: formData
-        });
-        const data = await res.json();
-
-        if (data.secure_url) {
-            photoStore[pfx] = { uploading: false, url: data.secure_url };
-            label.classList.add('hidden');
-            previewArea.classList.remove('hidden');
-        } else {
-            throw new Error('업로드 실패');
-        }
-    } catch(e) {
-        photoStore[pfx] = null;
-        label.innerHTML = '📷 사진 첨부 (다시 시도)';
-        alert('사진 업로드 실패. 다시 시도해주세요.');
-    }
+    // 압축 & base64 변환 (최대 1200px, JPEG 85%)
+    const base64 = await compressImage(file, 1200, 0.85);
+    preview.src = base64;
+    photoStore[pfx] = { base64 };
+    label.classList.add('hidden');
+    previewArea.classList.remove('hidden');
 }
 
-function removePhoto(pfx){
-    document.getElementById(pfx+'-photoInput').value='';
-    photoStore[pfx]=null;
-    document.getElementById(pfx+'-photoLabel').classList.remove('hidden');
-    document.getElementById(pfx+'-photoLabel').innerHTML='📷 사진 첨부';
-    document.getElementById(pfx+'-photoPreviewArea').classList.add('hidden');
+/* ── 사진 삭제 ── */
+function removePhoto(pfx) {
+    document.getElementById(pfx + '-photoInput').value = '';
+    photoStore[pfx] = null;
+    document.getElementById(pfx + '-photoLabel').classList.remove('hidden');
+    document.getElementById(pfx + '-photoPreviewArea').classList.add('hidden');
 }
 
 function eqSend(){
@@ -979,10 +1077,10 @@ function eqSend(){
     data.checks.forEach(c=>{checks[c.id]=document.getElementById('eq-v-'+c.id)?.value||'';});
     const nums={};
     data.numerics.forEach(n=>{nums[n.id]=document.getElementById('eq-'+n.id)?.value||'';}); 
-    const payload={date:document.getElementById('eq-date').value,inspector,machine,memo:document.getElementById('eq-memo').value,imageUrl:ph.url||'',...checks,...nums};
+    const payload={formType:'equip',date:document.getElementById('eq-date').value,inspector,machine,memo:document.getElementById('eq-memo').value,imageBase64:(ph&&ph.base64)||'',...checks,...nums};
     const btn=document.getElementById('eq-btn');const loader=document.getElementById('eq-loader');const txt=document.getElementById('eq-btnTxt');
     btn.disabled=true;loader.classList.remove('hidden');txt.innerText='전송 중...';
-    fetch(GS_EQUIP,{method:'POST',mode:'no-cors',body:JSON.stringify(payload)})
+    fetch(GS_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(payload)})
     .then(()=>{alert('✅ 전송 완료!');goHome();})
     .finally(()=>{btn.disabled=false;loader.classList.add('hidden');txt.innerHTML='<i class="fas fa-paper-plane"></i> 점검 완료 및 전송';});
 }
@@ -1028,10 +1126,10 @@ function prSend(){
     if(!inspector){alert('점검자를 선택하세요.');return;}
     const ph=photoStore['pr']||{};
     if(ph.uploading){alert('📷 사진 업로드 중입니다.\n잠시 후 다시 전송해주세요.');return;}
-    const payload={date:document.getElementById('pr-date').value,machine:sel.value,inspector,c_safety:document.getElementById('pr-v-safety').value||'미점검',c_ok:document.getElementById('pr-v-ok').value||'미점검',c_oil:document.getElementById('pr-v-oil').value||'미점검',c_clamp:document.getElementById('pr-v-clamp').value||'미점검',c_vs:document.getElementById('pr-v-vs').value||'미점검',m_air:document.getElementById('pr-air').value||'0',m_clutch:document.getElementById('pr-clutch').value||'0',m_volt:document.getElementById('pr-volt').value||'0',memo:document.getElementById('pr-memo').value,signature:isCanvasBlank()?'':canvas.toDataURL('image/png'),imageUrl:ph.url||''};
+    const payload={date:document.getElementById('pr-date').value,machine:sel.value,inspector,c_safety:document.getElementById('pr-v-safety').value||'미점검',c_ok:document.getElementById('pr-v-ok').value||'미점검',c_oil:document.getElementById('pr-v-oil').value||'미점검',c_clamp:document.getElementById('pr-v-clamp').value||'미점검',c_vs:document.getElementById('pr-v-vs').value||'미점검',m_air:document.getElementById('pr-air').value||'0',m_clutch:document.getElementById('pr-clutch').value||'0',m_volt:document.getElementById('pr-volt').value||'0',memo:document.getElementById('pr-memo').value,signature:isCanvasBlank()?'':canvas.toDataURL('image/png'),formType:'press',imageBase64:(ph&&ph.base64)||''};
     const btn=document.getElementById('pr-btn');const loader=document.getElementById('pr-loader');const txt=document.getElementById('pr-btnTxt');
     btn.disabled=true; txt.textContent='전송 중...'; loader.classList.remove('hidden');
-    fetch(GS_PRESS,{method:'POST',mode:'no-cors',body:JSON.stringify(payload)})
+    fetch(GS_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(payload)})
     .then(()=>{alert('✅ 전송 완료!');goHome();})
     .finally(()=>{btn.disabled=false;txt.innerHTML='<i class="fas fa-paper-plane"></i> 전송하기';loader.classList.add('hidden');});
 }
@@ -1052,12 +1150,125 @@ function rdSend(){
     const results={}; RD_ITEMS.forEach(i=>{results['item'+i.id]=document.getElementById('rd-val-'+i.id).value||'미점검';});
     const ph=photoStore['rd']||{};
     if(ph.uploading){alert('📷 사진 업로드 중입니다.\n잠시 후 다시 전송해주세요.');return;}
-    const payload={date:document.getElementById('rd-date').value,inspector:document.getElementById('rd-inspector').value,machine:document.getElementById('rd-machineNo').value,memo:document.getElementById('rd-memo').value,imageUrl:ph.url||'',...results};
+    const payload={date:document.getElementById('rd-date').value,inspector:document.getElementById('rd-inspector').value,machine:document.getElementById('rd-machineNo').value,memo:document.getElementById('rd-memo').value,formType:'radial',imageBase64:(ph&&ph.base64)||'',...results};
     const btn=document.getElementById('rd-btn');
     const loader=document.getElementById('rd-loader');
     const txt=document.getElementById('rd-btnTxt');
     btn.disabled=true; loader.classList.remove('hidden'); txt.textContent='전송 중...';
-    fetch(GS_RADIAL,{method:'POST',mode:'no-cors',body:JSON.stringify(payload)}).then(()=>{alert('✅ 전송 완료!');goHome();}).finally(()=>{btn.disabled=false; loader.classList.add('hidden'); txt.innerHTML='<i class="fas fa-paper-plane"></i> 전송하기';});
+    fetch(GS_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(payload)}).then(()=>{alert('✅ 전송 완료!');goHome();}).finally(()=>{btn.disabled=false; loader.classList.add('hidden'); txt.innerHTML='<i class="fas fa-paper-plane"></i> 전송하기';});
+}
+
+
+/* ════════════════════════════════════════════════
+   점검 기록 조회 (Viewer)
+   ════════════════════════════════════════════════ */
+async function loadRecords() {
+    const type   = document.getElementById('view-type').value;
+    const status = document.getElementById('view-status');
+    const wrap   = document.getElementById('view-table-wrap');
+    status.textContent = '⏳ 불러오는 중...';
+    wrap.innerHTML = '<p class=\"view-empty\">⏳ 로딩 중...</p>';
+
+    if (!GS_URL || GS_URL.includes('YOUR_')) {
+        status.textContent = '⚠️ GS_URL 미설정';
+        wrap.innerHTML = '<p class=\"view-empty\" style=\"color:#ef4444\">⚠️ index.html의 <b>GS_URL</b>을 Apps Script URL로 교체한 뒤 다시 시도하세요.</p>';
+        return;
+    }
+
+    try {
+        const res  = await fetch(GS_URL + '?action=getRecords&type=' + type);
+        const data = await res.json();
+        const rows = data.records || [];
+        if (rows.length < 2) {
+            wrap.innerHTML = '<p class=\"view-empty\">데이터가 없습니다.</p>';
+            status.textContent = '0건';
+            return;
+        }
+        renderRecordTable(rows, wrap);
+        status.textContent = (rows.length - 1) + '건 조회됨 (최신순)';
+    } catch(err) {
+        status.textContent = '조회 실패';
+        wrap.innerHTML = '<p class=\"view-empty\" style=\"color:#ef4444\">데이터 조회 중 오류가 발생했습니다.<br>' + err.message + '</p>';
+    }
+}
+
+function renderRecordTable(records, wrap) {
+    const headers = records[0];
+    const rows    = records.slice(1).reverse();
+    const imgIdx  = headers.indexOf('사진링크');
+
+    let html = '<div style=\"overflow-x:auto;padding:8px\"><table class=\"vtable\"><thead><tr>';
+    headers.forEach(h => { html += '<th>' + h + '</th>'; });
+    html += '</tr></thead><tbody>';
+
+    rows.forEach(row => {
+        html += '<tr>';
+        row.forEach((cell, i) => {
+            if (i === imgIdx) {
+                const url = String(cell || '');
+                if (url.startsWith('http')) {
+                    html += '<td><span class=\"photo-ic\" title=\"마우스 올리면 미리보기, 클릭하면 확대\"'
+                          + ' onmouseenter=\"showHoverPreview(event,\'' + url + '\')\"'
+                          + ' onmouseleave=\"hideHoverPreview()\"'
+                          + ' onclick=\"openImgPopup(\'' + url + '\')\">📷</span></td>';
+                } else {
+                    html += '<td style=\"color:#cbd5e1;font-size:11px;\">-</td>';
+                }
+            } else {
+                const val = (cell !== null && cell !== undefined) ? String(cell) : '-';
+                html += '<td>' + val + '</td>';
+            }
+        });
+        html += '</tr>';
+    });
+    html += '</tbody></table></div>';
+    wrap.innerHTML = html;
+}
+
+/* 호버 미리보기 */
+function showHoverPreview(e, url) {
+    const hp  = document.getElementById('hoverPreview');
+    document.getElementById('hoverPreviewImg').src = url;
+    hp.style.display = 'block';
+    const x = Math.min(e.clientX + 18, window.innerWidth  - 290);
+    const y = Math.max(e.clientY - 120, 10);
+    hp.style.left = x + 'px';
+    hp.style.top  = y + 'px';
+}
+function hideHoverPreview() {
+    document.getElementById('hoverPreview').style.display = 'none';
+}
+
+/* 사진 팝업 */
+function openImgPopup(url) {
+    document.getElementById('imgPopupImg').src = url;
+    document.getElementById('imgPopupOverlay').classList.add('show');
+}
+function closeImgPopup() {
+    document.getElementById('imgPopupOverlay').classList.remove('show');
+}
+function popupBgClick(e) {
+    if (e.target === document.getElementById('imgPopupOverlay')) closeImgPopup();
+}
+
+/* 인쇄 */
+function printPhoto() {
+    const url = document.getElementById('imgPopupImg').src;
+    const w = window.open('', '_blank');
+    w.document.write(
+        '<!DOCTYPE html><html><head><title>점검 사진 인쇄</title>' +
+        '<style>body{margin:20px;text-align:center;font-family:sans-serif;}' +
+        'h3{color:#1e3a5f;margin-bottom:12px;}' +
+        'img{max-width:100%;max-height:85vh;border-radius:8px;}' +
+        '.pb{margin-top:16px;padding:12px 32px;background:#1155ff;color:white;' +
+        'border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;}' +
+        '@media print{.pb,.np{display:none;}}</style></head>' +
+        '<body><h3 class=\"np\">SUNGWOO KTM 현장 점검 사진</h3>' +
+        '<img src=\"' + url + '\" alt=\"점검 사진\"><br>' +
+        '<button class=\"pb\" onclick=\"window.print()\">🖨️ 인쇄</button>' +
+        '</body></html>'
+    );
+    w.document.close();
 }
 </script>
 </body>
