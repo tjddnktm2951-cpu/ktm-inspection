@@ -2468,12 +2468,14 @@ async function s5sLoadHistory() {
 
 async function s5sDeleteRecord(id, zone, evalDate, total) {
     if (!id) { alert('삭제 대상 ID가 없습니다.'); return; }
-    const msg = '⚠️ 다음 평가 기록을 삭제하시겠어요?\n\n'
+    const msg = '⚠️ 다음 평가 기록을 완전히 삭제하시겠어요?\n\n'
               + '   • 구역: ' + zone + '\n'
               + '   • 평가일: ' + evalDate + '\n'
               + '   • 합계: ' + total + '점\n\n'
-              + '시트 행이 영구 삭제됩니다.\n'
-              + '※ Google Drive에 저장된 사진 파일은 그대로 보존됩니다 (복구 안전망).\n\n'
+              + '🗑️ 삭제 대상:\n'
+              + '   ① 시트의 평가 행 (영구 삭제)\n'
+              + '   ② Drive의 지적·개선 사진 파일 (휴지통으로 이동)\n\n'
+              + '※ Drive 휴지통에 30일간 보관되어 그 안에는 복구 가능합니다.\n\n'
               + '정말 삭제할까요?';
     if (!confirm(msg)) return;
 
@@ -2488,7 +2490,11 @@ async function s5sDeleteRecord(id, zone, evalDate, total) {
         if ((json.deleted || 0) === 0) {
             alert('해당 기록을 찾을 수 없습니다. 이미 삭제되었을 수 있어요.');
         } else {
-            alert('✅ 삭제 완료.\n\n사진 파일은 Drive의 \'3정5S 평가/' + evalDate.substring(0,7) + '/' + zone + '구역/\' 폴더에 그대로 있습니다.\n필요 시 직접 정리하세요.');
+            const ph = (json.deletedPhotos || 0);
+            alert('✅ 삭제 완료\n\n'
+                + '• 시트 행: 삭제됨\n'
+                + '• Drive 사진: ' + ph + '장 휴지통으로 이동\n\n'
+                + '실수였다면 Drive 휴지통(30일 보관)에서 복구할 수 있어요.');
         }
         s5sLoadHistory();
     } catch(e) {
