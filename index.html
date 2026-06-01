@@ -81,6 +81,24 @@
         }
         .nav-card.ctr { width:210px; border-color:rgba(0,170,255,.55); background:rgba(0,28,80,.88); box-shadow:0 0 18px rgba(0,120,255,.2); }
         .nav-card.air { width:200px; border-color:rgba(0,200,150,.45); background:rgba(0,30,25,.85); }
+        .nav-card.down { width:200px; border-color:rgba(255,80,80,.45); background:rgba(45,8,8,.88); }
+        .nav-card.down:hover { border-color:#ff5050; box-shadow:0 6px 28px rgba(255,80,80,.35),0 0 0 1px rgba(255,100,100,.25); }
+        .nav-card.down .card-icon-wrap { background:linear-gradient(135deg,rgba(180,30,30,.9),rgba(80,10,10,.95)); border-right:1px solid rgba(255,90,90,.25); }
+        .nav-card.down .card-label { color:#ffc8c8; }
+        .nav-card.down .card-sub { color:#a04040; }
+        .nav-card.down:hover .card-label { color:#fff; }
+        .nav-card.down:hover .card-arrow { color:rgba(255,140,140,.9); transform:translateX(3px); }
+        /* 구글시트 바로가기 — Google Sheets 초록 테마 */
+        .nav-card.sheet { width:200px; border-color:rgba(15,157,88,.55); background:rgba(8,40,25,.88); }
+        .nav-card.sheet:hover { border-color:#0f9d58; box-shadow:0 6px 28px rgba(15,157,88,.4),0 0 0 1px rgba(34,197,94,.25); transform:translateX(8px); }
+        .nav-card.sheet .card-icon-wrap { background:linear-gradient(135deg,rgba(15,157,88,.95),rgba(7,90,50,.98)); border-right:1px solid rgba(40,180,100,.3); }
+        .nav-card.sheet .card-icon-wrap .icon { font-size:24px; }
+        .nav-card.sheet .card-label { color:#bcf0d4; }
+        .nav-card.sheet .card-sub { color:#3a7050; }
+        .nav-card.sheet:hover .card-label { color:#fff; }
+        .nav-card.sheet:hover .card-sub { color:#7fd9a3; }
+        .nav-card.sheet .card-arrow { color:rgba(40,180,100,.4); }
+        .nav-card.sheet:hover .card-arrow { color:rgba(60,220,130,.9); transform:translateX(3px); }
         .nav-card:hover { transform:translateX(8px); border-color:#00aaff; box-shadow:0 6px 28px rgba(0,100,255,.45),0 0 0 1px rgba(0,170,255,.2); }
         .nav-card.air:hover { border-color:#00ffaa; box-shadow:0 6px 28px rgba(0,200,100,.35),0 0 0 1px rgba(0,220,130,.2); }
         .nav-card:active { transform:translateX(4px) scale(.98); }
@@ -109,6 +127,90 @@
         .back-btn:hover { background:rgba(0,70,180,.9); color:#fff; border-color:#00aaff; }
         .page-badge-txt { font-family:'Orbitron',sans-serif; font-size:12px; color:#4488ff; letter-spacing:2px; opacity:.8; }
         .page-badge-txt.air { color:#00cc88; }
+        .page-badge-txt.down { color:#ff6363; }
+        /* ════════════ 가동중단 관리 (Downtime) 전용 스타일 ════════════ */
+        .dt-card { background:#fff; border-radius:14px; box-shadow:0 2px 12px rgba(0,0,0,.06); margin-bottom:14px; overflow:hidden; border:1px solid #fee2e2; }
+        .dt-card.warn { border-color:#fed7aa; }
+        .dt-card.info { border-color:#dbeafe; }
+        .dt-card-head { display:flex; align-items:center; gap:10px; padding:12px 16px; border-bottom:1px solid #fee2e2; background:#fef2f2; }
+        .dt-card.warn .dt-card-head { background:#fff7ed; border-bottom-color:#fed7aa; }
+        .dt-card.info .dt-card-head { background:#eff6ff; border-bottom-color:#dbeafe; }
+        .dt-icon { width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; }
+        .dt-icon.red { background:#fee2e2; color:#b91c1c; border:1px solid #fecaca; }
+        .dt-icon.amber { background:#fef3c7; color:#b45309; border:1px solid #fde68a; }
+        .dt-icon.blue { background:#dbeafe; color:#1d4ed8; border:1px solid #bfdbfe; }
+        .dt-card-title { font-size:14px; font-weight:800; color:#1f2937; }
+        .dt-badge { font-size:10px; font-weight:700; padding:2px 8px; border-radius:10px; margin-left:auto; }
+        .dt-badge.plan { background:#dcfce7; color:#15803d; border:1px solid #bbf7d0; }
+        .dt-badge.unplan { background:#fee2e2; color:#b91c1c; border:1px solid #fecaca; }
+        .dt-card-body { padding:14px 16px; }
+        .dt-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+        .dt-grid.cols3 { grid-template-columns:1fr 1fr 1fr; }
+        .dt-fg { display:flex; flex-direction:column; gap:5px; }
+        .dt-fg.full { grid-column:1/-1; }
+        .dt-fg label { font-size:10px; font-weight:800; letter-spacing:.5px; color:#6b7280; text-transform:uppercase; }
+        .dt-fg input, .dt-fg select, .dt-fg textarea {
+            background:#f9fafb; border:1.5px solid #e5e7eb; border-radius:8px; padding:9px 11px;
+            font-family:inherit; font-size:13px; color:#1f2937; outline:none; width:100%;
+            transition:border-color .15s, background .15s;
+        }
+        .dt-fg input:focus, .dt-fg select:focus, .dt-fg textarea:focus { border-color:#dc2626; background:#fff; box-shadow:0 0 0 3px rgba(220,38,38,.12); }
+        .dt-fg textarea { resize:vertical; min-height:70px; font-family:inherit; }
+
+        /* 점검 항목 박스 (장비별) */
+        .dt-eq-block { background:#fff; border:1.5px solid #fed7aa; border-radius:10px; padding:12px; margin-bottom:10px; }
+        .dt-eq-block.checked { background:#f0fdf4; border-color:#86efac; }
+        .dt-eq-head { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+        .dt-eq-num { width:24px; height:24px; border-radius:6px; background:#fef3c7; color:#b45309; font-size:11px; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+        .dt-eq-block.checked .dt-eq-num { background:#bbf7d0; color:#15803d; }
+        .dt-eq-name { font-size:13px; font-weight:800; color:#1f2937; }
+        .dt-eq-status { margin-left:auto; font-size:10px; font-weight:700; padding:2px 8px; border-radius:10px; background:#fef3c7; color:#b45309; border:1px solid #fde68a; }
+        .dt-eq-block.checked .dt-eq-status { background:#dcfce7; color:#15803d; border-color:#bbf7d0; }
+        .dt-eq-select { width:100%; padding:9px 11px; border:1.5px solid #fed7aa; border-radius:8px; background:#fffbeb; font-size:13px; color:#1f2937; outline:none; cursor:pointer; }
+        .dt-eq-block.checked .dt-eq-select { border-color:#86efac; background:#f0fdf4; }
+        .dt-eq-select:focus { border-color:#dc2626; box-shadow:0 0 0 3px rgba(220,38,38,.12); }
+
+        /* 번호 매김 점검 항목 리스트 (각각 개별 선택) */
+        .dt-item-list { display:flex; flex-direction:column; gap:6px; }
+        .dt-item-row {
+            display:flex; align-items:center; gap:10px; padding:9px 12px;
+            background:#fffbeb; border:1.5px solid #fde68a; border-radius:8px;
+            cursor:pointer; transition:all .15s; user-select:none;
+        }
+        .dt-item-row:hover { border-color:#f59e0b; background:#fef3c7; }
+        .dt-item-row.checked { background:#dcfce7; border-color:#86efac; }
+        .dt-item-num {
+            width:24px; height:24px; border-radius:50%; background:#fef3c7;
+            color:#b45309; font-size:11px; font-weight:800;
+            display:flex; align-items:center; justify-content:center;
+            flex-shrink:0; border:1.5px solid #fde68a;
+        }
+        .dt-item-row.checked .dt-item-num { background:#bbf7d0; color:#15803d; border-color:#86efac; }
+        .dt-item-text { flex:1; font-size:13px; color:#1f2937; font-weight:600; }
+        .dt-item-chk {
+            width:24px; height:24px; border-radius:6px; background:#fff;
+            border:2px solid #e5e7eb; color:transparent; font-size:14px; font-weight:800;
+            display:flex; align-items:center; justify-content:center; flex-shrink:0;
+        }
+        .dt-item-row.checked .dt-item-chk { background:#10b981; color:#fff; border-color:#10b981; }
+        .dt-all-btn {
+            width:100%; margin-top:8px; padding:8px; background:#f0fdf4; color:#166534;
+            border:1.5px dashed #86efac; border-radius:8px; font-size:12px; font-weight:700;
+            cursor:pointer; transition:all .15s;
+        }
+        .dt-all-btn:hover { background:#dcfce7; border-style:solid; }
+        .dt-all-btn.done { background:#dcfce7; border-style:solid; color:#15803d; }
+
+        /* 진행 바 */
+        .dt-progress { display:flex; align-items:center; gap:10px; margin-top:8px; padding:10px 12px; background:#fef9c3; border:1px solid #fde68a; border-radius:8px; }
+        .dt-progress-bar { flex:1; height:8px; background:#fff; border-radius:4px; overflow:hidden; border:1px solid #e5e7eb; }
+        .dt-progress-fill { height:100%; background:linear-gradient(90deg,#10b981,#34d399); border-radius:4px; transition:width .3s; }
+        .dt-progress-text { font-size:11px; font-weight:800; color:#92400e; font-family:'JetBrains Mono',monospace; }
+
+        /* 저장 버튼 */
+        .dt-save-btn { width:100%; padding:14px; background:linear-gradient(135deg,#dc2626,#991b1b); color:#fff; font-size:15px; font-weight:800; border:none; border-radius:12px; cursor:pointer; box-shadow:0 4px 14px rgba(220,38,38,.25); transition:opacity .15s, transform .1s; }
+        .dt-save-btn:hover { opacity:.9; }
+        .dt-save-btn:active { transform:scale(.98); }
 
         .check-btn { transition:all .2s; border:1px solid #cbd5e1; background:white; color:#64748b; }
         .check-btn.active { background-color:#3b82f6; color:white; border-color:#3b82f6; font-weight:bold; }
@@ -162,6 +264,103 @@
         .photo-ic { font-size:22px; cursor:pointer; display:inline-block; transition:transform .15s; }
         .photo-ic:hover { transform:scale(1.35); }
         .view-empty { padding:48px; text-align:center; color:#94a3b8; font-size:13px; }
+
+        /* ════════════ 3정5S 평가 (S5S) 전용 스타일 ════════════ */
+        .s5s-wrap { background:#f0fdf4; padding-top:96px; min-height:100vh; padding-bottom:80px; }
+        .s5s-hero { background:linear-gradient(135deg,#065f46,#10b981); border-radius:16px; padding:18px 20px; color:white; display:flex; align-items:center; gap:14px; box-shadow:0 4px 20px rgba(16,185,129,.25); margin-bottom:14px; }
+        .s5s-hero .ic { font-size:36px; }
+        .s5s-hero .ti { font-size:17px; font-weight:900; letter-spacing:.5px; }
+        .s5s-hero .sb { font-size:11px; opacity:.85; margin-top:2px; font-family:'JetBrains Mono',monospace; }
+        .s5s-tabs { display:flex; gap:6px; background:white; border-radius:12px; padding:5px; margin-bottom:14px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
+        .s5s-tab { flex:1; padding:11px 8px; text-align:center; font-size:13px; font-weight:800; color:#64748b; border-radius:8px; cursor:pointer; transition:all .15s; }
+        .s5s-tab.active { background:linear-gradient(135deg,#10b981,#059669); color:white; box-shadow:0 2px 8px rgba(16,185,129,.35); }
+        .s5s-card { background:white; border-radius:14px; padding:16px; margin-bottom:14px; box-shadow:0 2px 10px rgba(0,0,0,.06); border:1px solid #e2e8f0; }
+        .s5s-card-title { font-size:15px; font-weight:900; color:#065f46; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+        .s5s-label { display:block; font-size:11px; font-weight:800; color:#64748b; margin-bottom:5px; }
+        .s5s-input { width:100%; padding:11px 12px; border:1.5px solid #e2e8f0; border-radius:10px; font-size:14px; font-weight:600; color:#1e293b; background:#f8fafc; outline:none; box-sizing:border-box; }
+        .s5s-input:focus { border-color:#10b981; background:white; }
+        .s5s-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
+
+        /* 평가구역 도면 SVG */
+        .s5s-map { background:#ffffff; border-radius:14px; padding:14px; box-shadow:0 2px 12px rgba(0,0,0,.08); border:2px solid #d1fae5; margin-bottom:14px; }
+        .s5s-map-title { font-size:13px; font-weight:900; color:#065f46; text-align:center; margin-bottom:10px; }
+        .s5s-map svg { width:100%; height:auto; display:block; }
+        .s5s-zone-rect { cursor:pointer; transition:opacity .15s; }
+        .s5s-zone-rect:hover { opacity:.85; }
+        .s5s-zone-rect.selected { stroke:#0f172a; stroke-width:3; }
+        .s5s-zone-label { font-weight:900; font-size:14px; fill:white; pointer-events:none; text-anchor:middle; }
+        .s5s-zone-sub { font-size:9px; fill:white; pointer-events:none; text-anchor:middle; opacity:.95; }
+        .s5s-map-note { font-size:11px; color:#64748b; text-align:center; margin-top:8px; line-height:1.5; }
+
+        /* 구역 선택 버튼 */
+        .s5s-zone-btns { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:12px; }
+        .s5s-zone-btn { padding:14px 6px; border-radius:10px; border:2px solid transparent; font-size:14px; font-weight:900; color:white; cursor:pointer; text-align:center; }
+        .s5s-zone-btn.A { background:#f97316; }
+        .s5s-zone-btn.B { background:#3b82f6; }
+        .s5s-zone-btn.C { background:#10b981; }
+        .s5s-zone-btn.D { background:#a855f7; }
+        .s5s-zone-btn.selected { border-color:#0f172a; box-shadow:0 0 0 3px rgba(15,23,42,.15); transform:scale(1.03); }
+        .s5s-zone-btn .sub { display:block; font-size:9px; font-weight:600; opacity:.9; margin-top:2px; }
+
+        /* 13항목 체크시트 */
+        .s5s-item { padding:11px 12px; border-bottom:1px solid #f1f5f9; }
+        .s5s-item:last-child { border-bottom:none; }
+        .s5s-item-head { display:flex; align-items:flex-start; gap:8px; margin-bottom:7px; }
+        .s5s-item-cat { font-size:10px; font-weight:900; color:white; background:#10b981; padding:3px 7px; border-radius:5px; flex-shrink:0; }
+        .s5s-item-cat.정위치 { background:#0ea5e9; }
+        .s5s-item-cat.정품 { background:#8b5cf6; }
+        .s5s-item-cat.정량 { background:#f59e0b; }
+        .s5s-item-cat.정리 { background:#10b981; }
+        .s5s-item-cat.정돈 { background:#3b82f6; }
+        .s5s-item-cat.청결 { background:#ec4899; }
+        .s5s-item-text { font-size:13px; color:#1e293b; line-height:1.45; flex:1; font-weight:600; }
+        .s5s-item-no { font-weight:900; color:#10b981; margin-right:4px; }
+        .s5s-score-row { display:grid; grid-template-columns:repeat(5,1fr); gap:5px; }
+        .s5s-score-btn { padding:9px 0; border-radius:8px; border:1.5px solid #e2e8f0; background:white; font-size:13px; font-weight:900; color:#64748b; cursor:pointer; transition:all .12s; }
+        .s5s-score-btn:hover { border-color:#10b981; }
+        .s5s-score-btn.selected { background:#10b981; color:white; border-color:#10b981; box-shadow:0 2px 6px rgba(16,185,129,.4); }
+        .s5s-score-btn[data-score="2"].selected,
+        .s5s-score-btn[data-score="4"].selected { background:#dc2626; border-color:#dc2626; box-shadow:0 2px 6px rgba(220,38,38,.4); }
+        .s5s-photo-required { font-size:11px; color:#dc2626; font-weight:800; margin-top:8px; padding:6px 8px; background:#fef2f2; border-radius:6px; border-left:3px solid #dc2626; display:none; }
+        .s5s-photo-required.show { display:block; }
+
+        /* 사진 업로드 */
+        .s5s-photo-zone { margin-top:8px; }
+        .s5s-photo-btn { display:inline-flex; align-items:center; gap:6px; padding:8px 12px; background:#0ea5e9; color:white; border:none; border-radius:8px; font-size:12px; font-weight:800; cursor:pointer; }
+        .s5s-photo-btn:hover { background:#0284c7; }
+        .s5s-photo-list { display:flex; flex-wrap:wrap; gap:7px; margin-top:8px; }
+        .s5s-photo-thumb { position:relative; width:64px; height:64px; border-radius:8px; overflow:hidden; border:2px solid #e2e8f0; }
+        .s5s-photo-thumb img { width:100%; height:100%; object-fit:cover; }
+        .s5s-photo-thumb .del { position:absolute; top:-6px; right:-6px; width:20px; height:20px; background:#dc2626; color:white; border:none; border-radius:50%; font-size:12px; font-weight:bold; cursor:pointer; line-height:18px; padding:0; }
+
+        /* 총점·등급 표시 */
+        .s5s-score-total { background:linear-gradient(135deg,#0f172a,#1e293b); border-radius:14px; padding:18px; color:white; margin-bottom:14px; text-align:center; }
+        .s5s-score-total .sc-lbl { font-size:11px; opacity:.7; letter-spacing:1px; }
+        .s5s-score-total .sc-num { font-size:38px; font-weight:900; margin:6px 0; font-family:'JetBrains Mono',monospace; }
+        .s5s-score-total .sc-grade { display:inline-block; padding:7px 22px; border-radius:20px; font-size:16px; font-weight:900; letter-spacing:1px; }
+        .s5s-grade-A { background:#10b981; }
+        .s5s-grade-B { background:#3b82f6; }
+        .s5s-grade-C { background:#f59e0b; }
+        .s5s-grade-D { background:#dc2626; }
+        .s5s-score-total .sc-note { font-size:11px; opacity:.75; margin-top:8px; }
+
+        /* 저장 버튼 */
+        .s5s-save-btn { width:100%; padding:16px; background:linear-gradient(135deg,#10b981,#059669); color:white; border:none; border-radius:12px; font-size:16px; font-weight:900; cursor:pointer; box-shadow:0 4px 14px rgba(16,185,129,.35); margin-top:10px; }
+        .s5s-save-btn:disabled { background:#94a3b8; cursor:not-allowed; box-shadow:none; }
+
+        /* 개선현황·이력 카드 */
+        .s5s-list-empty { padding:48px 16px; text-align:center; color:#94a3b8; font-size:13px; }
+        .s5s-hist-card { background:white; border-radius:12px; padding:14px; margin-bottom:10px; box-shadow:0 1px 6px rgba(0,0,0,.05); border-left:5px solid #10b981; }
+        .s5s-hist-card.B { border-left-color:#3b82f6; }
+        .s5s-hist-card.C { border-left-color:#f59e0b; }
+        .s5s-hist-card.D { border-left-color:#dc2626; }
+        .s5s-hist-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+        .s5s-hist-zone { font-size:14px; font-weight:900; color:#1e293b; }
+        .s5s-hist-grade { padding:4px 10px; border-radius:14px; color:white; font-size:11px; font-weight:900; }
+        .s5s-hist-meta { font-size:11px; color:#64748b; margin-bottom:8px; }
+        .s5s-hist-photos { display:flex; gap:6px; flex-wrap:wrap; }
+        .s5s-hist-photos img { width:54px; height:54px; object-fit:cover; border-radius:6px; cursor:pointer; }
+        .s5s-improve-btn { padding:7px 12px; background:#0ea5e9; color:white; border:none; border-radius:7px; font-size:11px; font-weight:800; cursor:pointer; margin-top:8px; }
     </style>
 </head>
 <body>
@@ -208,6 +407,21 @@
             <div class="card-body"><span class="card-label">에어 컴프레서</span><span class="card-sub">AIR COMPRESSOR CHECK</span></div>
             <span class="card-arrow" style="color:rgba(0,200,130,.4)">▶</span>
         </div>
+        <div class="nav-card down" onclick="openPage('pg-downtime')">
+            <div class="card-icon-wrap"><span class="icon">🚨</span></div>
+            <div class="card-body"><span class="card-label">가동중단 관리</span><span class="card-sub">DOWNTIME MANAGEMENT</span></div>
+            <span class="card-arrow" style="color:rgba(255,80,80,.4)">▶</span>
+        </div>
+        <div class="nav-card s5s" onclick="openPage('pg-3s5s')" style="border-color:rgba(80,200,150,.4);background:rgba(6,28,22,.85);">
+            <div class="card-icon-wrap" style="background:linear-gradient(135deg,rgba(20,120,80,.9),rgba(10,60,40,.95));border-right-color:rgba(80,200,150,.3);">
+                <span class="icon">🧹</span>
+            </div>
+            <div class="card-body">
+                <span class="card-label" style="color:#a8f0c8;">3정5S 평가</span>
+                <span class="card-sub" style="color:#3a8a60;">3S5S EVALUATION</span>
+            </div>
+            <span class="card-arrow" style="color:rgba(80,200,150,.4)">▶</span>
+        </div>
         <div class="nav-card" onclick="openPage('pg-view')" style="border-color:rgba(180,120,255,.35);background:rgba(20,8,45,.85);">
             <div class="card-icon-wrap" style="background:linear-gradient(135deg,rgba(80,30,140,.9),rgba(40,10,80,.95));border-right-color:rgba(150,80,255,.25);">
                 <span class="icon">📋</span>
@@ -217,6 +431,14 @@
                 <span class="card-sub" style="color:#4a3070;">RECORD VIEWER</span>
             </div>
             <span class="card-arrow" style="color:rgba(160,100,255,.4)">▶</span>
+        </div>
+        <div class="nav-card sheet" onclick="openSheet()">
+            <div class="card-icon-wrap"><span class="icon">📊</span></div>
+            <div class="card-body">
+                <span class="card-label">구글시트 바로보기</span>
+                <span class="card-sub">[성우KTM] 통합 점검대장</span>
+            </div>
+            <span class="card-arrow">▶</span>
         </div>
     </div>
 </div>
@@ -614,6 +836,275 @@
     </div>
 </div>
 
+<!-- ════════════ 가동중단 관리 ════════════ -->
+<div id="pg-downtime" class="page scroll-page">
+    <div class="back-bar">
+        <div class="back-btn" onclick="goHome()">← 홈으로</div>
+        <div class="page-badge-txt down">가동중단 / 재가동 관리</div>
+    </div>
+    <div style="background:#fef2f2;padding-top:96px;min-height:100vh;padding-bottom:80px;">
+        <div class="max-w-md mx-auto px-3 mb-4">
+            <div style="background:linear-gradient(135deg,#7f1d1d,#b91c1c);border-radius:16px;padding:18px 20px;color:white;display:flex;align-items:center;gap:14px;box-shadow:0 4px 20px rgba(185,28,28,.3);">
+                <div style="font-size:36px;">🚨</div>
+                <div>
+                    <div style="font-size:17px;font-weight:900;letter-spacing:.5px;">설비 가동중단 / 재가동 관리</div>
+                    <div style="font-size:11px;opacity:.8;margin-top:2px;font-family:'JetBrains Mono',monospace;">DOWNTIME · 성우KTM 개발부</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 1. 가동중단 상황 입력 -->
+        <div class="max-w-md mx-auto px-3">
+            <div class="dt-card">
+                <div class="dt-card-head">
+                    <div class="dt-icon red">🚨</div>
+                    <div class="dt-card-title">1. 가동중단 상황 입력</div>
+                </div>
+                <div class="dt-card-body">
+                    <div class="dt-grid cols3" style="grid-template-columns:1fr 1fr;">
+                        <div class="dt-fg">
+                            <label>📅 발생 일시</label>
+                            <input type="datetime-local" id="dt-date">
+                        </div>
+                        <div class="dt-fg">
+                            <label>🏭 대상 설비</label>
+                            <select id="dt-machineSel" onchange="dtSyncMachine()">
+                                <option value="">-- 선택 --</option>
+                                <option>PRESS 1 (DS-200P)</option>
+                                <option>PRESS 2 (DSW-200P)</option>
+                                <option>PRESS 3 (BS-300P)</option>
+                                <option>밀링2호 (SW-A-02)</option>
+                                <option>CNC MILLING 10호</option>
+                                <option>RADIAL 우야-1250</option>
+                                <option>RADIAL 두산-1100</option>
+                                <option>크레인(2.8ton)</option>
+                                <option>크레인(5ton)</option>
+                                <option>콤푸레샤</option>
+                                <option value="직접입력">✏️ 직접입력</option>
+                            </select>
+                            <input type="text" id="dt-machine" placeholder="직접 입력 또는 위에서 선택" style="margin-top:5px;" oninput="dtRenderChecklist()">
+                        </div>
+                        <div class="dt-fg">
+                            <label>⏸ 중단 유형</label>
+                            <select id="dt-stopTypeSel" onchange="dtSyncStopType()">
+                                <option value="plan">계획정지 (점심/퇴근/휴일)</option>
+                                <option value="unplan">비계획정지 (고장/파손/정전)</option>
+                                <option value="custom">직접입력</option>
+                            </select>
+                        </div>
+                        <div class="dt-fg">
+                            <label>📝 중단 사유</label>
+                            <input type="text" id="dt-reason" placeholder="예) 금형 파손, 점심시간 등">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. 재가동 전 설비/품질 점검 -->
+            <div class="dt-card warn">
+                <div class="dt-card-head">
+                    <div class="dt-icon amber">✅</div>
+                    <div class="dt-card-title">2. 재가동 전 설비/품질 점검</div>
+                    <span class="dt-badge plan" id="dt-typeBadge">계획정지</span>
+                </div>
+                <div class="dt-card-body">
+                    <div id="dt-checklist"></div>
+                    <div class="dt-progress">
+                        <span style="font-size:13px;">📊</span>
+                        <div class="dt-progress-bar"><div class="dt-progress-fill" id="dt-progFill" style="width:0%"></div></div>
+                        <span class="dt-progress-text" id="dt-progText">0 / 0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. 조치 내용 / 작업자 -->
+            <div class="dt-card info">
+                <div class="dt-card-head">
+                    <div class="dt-icon blue">📝</div>
+                    <div class="dt-card-title">3. 조치 내용 / 작업자</div>
+                </div>
+                <div class="dt-card-body">
+                    <div class="dt-grid" style="grid-template-columns:1fr;">
+                        <div class="dt-fg full">
+                            <label>🛠 조치 내용 (상세)</label>
+                            <textarea id="dt-action" placeholder="수행한 조치 내용을 입력하세요&#10;예) 금형 R부 사상 실시, 안전센서 재설정, 시운전 3회 실시 후 이상 없음"></textarea>
+                        </div>
+                        <div class="dt-fg full">
+                            <label>👷 작업자</label>
+                            <select id="dt-workerSel" onchange="dtSyncWorker()">
+                                <option value="">-- 선택 --</option>
+                                <option>윤상욱</option>
+                                <option>최영팔</option>
+                                <option>안중섭</option>
+                                <option>최민하</option>
+                                <option>노종희</option>
+                                <option value="직접입력">✏️ 직접입력</option>
+                            </select>
+                            <input type="text" id="dt-worker" placeholder="작업자 성함" style="margin-top:5px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 저장 버튼 -->
+            <button class="dt-save-btn" onclick="dtSave()">✅ 점검 완료 및 저장</button>
+        </div>
+    </div>
+</div>
+
+<!-- ════════════ 3정5S 활동 평가 ════════════ -->
+<div id="pg-3s5s" class="page scroll-page">
+    <div class="back-bar">
+        <div class="back-btn" onclick="goHome()">← 홈으로</div>
+        <div class="page-badge-txt" style="color:#10b981;">3정5S 활동 평가</div>
+    </div>
+    <div class="s5s-wrap">
+        <div class="max-w-md mx-auto px-3">
+            <!-- 헤더 -->
+            <div class="s5s-hero">
+                <div class="ic">🧹</div>
+                <div>
+                    <div class="ti">성우KTM 3정5S 활동 평가</div>
+                    <div class="sb">EVERY 2nd · 4th MONDAY · 성우KTM</div>
+                </div>
+            </div>
+
+            <!-- 탭 -->
+            <div class="s5s-tabs">
+                <div class="s5s-tab active" data-tab="eval" onclick="s5sShowTab('eval')">📝 평가작성</div>
+                <div class="s5s-tab" data-tab="improve" onclick="s5sShowTab('improve')">🔧 개선현황</div>
+                <div class="s5s-tab" data-tab="hist" onclick="s5sShowTab('hist')">📊 이력조회</div>
+            </div>
+
+            <!-- ── TAB: 평가작성 ── -->
+            <div id="s5s-tab-eval">
+                <!-- 평가구역 도면 -->
+                <div class="s5s-map">
+                    <div class="s5s-map-title">📍 3정5S 활동 평가 구역</div>
+                    <svg viewBox="0 0 360 260" xmlns="http://www.w3.org/2000/svg">
+                        <!-- 외곽 -->
+                        <rect x="5" y="5" width="350" height="250" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+                        <!-- C구역 (좌상 - 금형적재대/NC) -->
+                        <rect class="s5s-zone-rect zone-C" x="10" y="10" width="200" height="120" rx="6" fill="#10b981" onclick="s5sSelectZone('C')"/>
+                        <text class="s5s-zone-label" x="110" y="58">C 구역</text>
+                        <text class="s5s-zone-sub" x="110" y="76">금형 적재대</text>
+                        <text class="s5s-zone-sub" x="110" y="90">NC 가공</text>
+                        <text class="s5s-zone-sub" x="110" y="104">밀링 / 콘도머신</text>
+                        <!-- B구역 (우상 - 연마/조립) -->
+                        <rect class="s5s-zone-rect zone-B" x="215" y="10" width="135" height="120" rx="6" fill="#3b82f6" onclick="s5sSelectZone('B')"/>
+                        <text class="s5s-zone-label" x="282" y="58">B 구역</text>
+                        <text class="s5s-zone-sub" x="282" y="76">연마 가공</text>
+                        <text class="s5s-zone-sub" x="282" y="90">조립</text>
+                        <text class="s5s-zone-sub" x="282" y="104">레디알 1~3</text>
+                        <!-- A구역 (좌하 - T/O 대기 출하) -->
+                        <rect class="s5s-zone-rect zone-A" x="10" y="135" width="200" height="115" rx="6" fill="#f97316" onclick="s5sSelectZone('A')"/>
+                        <text class="s5s-zone-label" x="110" y="180">A 구역</text>
+                        <text class="s5s-zone-sub" x="110" y="198">T/O 대기 출하</text>
+                        <text class="s5s-zone-sub" x="110" y="212">프레스 1~3</text>
+                        <text class="s5s-zone-sub" x="110" y="226">점소재 대기</text>
+                        <!-- D구역 (우하 - 사무실/수입검사) -->
+                        <rect class="s5s-zone-rect zone-D" x="215" y="135" width="135" height="115" rx="6" fill="#a855f7" onclick="s5sSelectZone('D')"/>
+                        <text class="s5s-zone-label" x="282" y="180">D 구역</text>
+                        <text class="s5s-zone-sub" x="282" y="198">사무실</text>
+                        <text class="s5s-zone-sub" x="282" y="212">수입검사</text>
+                        <text class="s5s-zone-sub" x="282" y="226">CCF/세면실</text>
+                        <!-- 정북 화살표 -->
+                        <text x="338" y="22" font-size="9" fill="#475569" font-weight="bold">N ↑</text>
+                    </svg>
+                    <div class="s5s-map-note">점검일정: <b>매월 2·4째 월요일</b> · 화장실: 공동관리</div>
+                </div>
+
+                <!-- 구역 선택 버튼 -->
+                <div class="s5s-card">
+                    <div class="s5s-card-title">1. 평가 구역 선택</div>
+                    <div class="s5s-zone-btns">
+                        <div class="s5s-zone-btn A" data-zone="A" onclick="s5sSelectZone('A')">A<span class="sub">출하 / 프레스</span></div>
+                        <div class="s5s-zone-btn B" data-zone="B" onclick="s5sSelectZone('B')">B<span class="sub">연마 / 조립</span></div>
+                        <div class="s5s-zone-btn C" data-zone="C" onclick="s5sSelectZone('C')">C<span class="sub">금형 / NC</span></div>
+                        <div class="s5s-zone-btn D" data-zone="D" onclick="s5sSelectZone('D')">D<span class="sub">사무 / 검사</span></div>
+                    </div>
+                </div>
+
+                <!-- 기본정보 -->
+                <div class="s5s-card">
+                    <div class="s5s-card-title">2. 평가자 정보</div>
+                    <div class="s5s-row">
+                        <div>
+                            <label class="s5s-label">📅 평가일자</label>
+                            <input type="date" id="s5s-date" class="s5s-input">
+                        </div>
+                        <div>
+                            <label class="s5s-label">👷 평가자</label>
+                            <input type="text" id="s5s-evaluator" class="s5s-input" placeholder="성함 입력">
+                        </div>
+                    </div>
+                    <div class="s5s-row">
+                        <div>
+                            <label class="s5s-label">👤 관리담당 (정)</label>
+                            <input type="text" id="s5s-mgr-main" class="s5s-input" placeholder="이름 직접입력">
+                        </div>
+                        <div>
+                            <label class="s5s-label">👤 관리담당 (부)</label>
+                            <input type="text" id="s5s-mgr-sub" class="s5s-input" placeholder="이름 직접입력">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 13항목 체크시트 -->
+                <div class="s5s-card">
+                    <div class="s5s-card-title">3. CHECK SHEET (13항목)</div>
+                    <div id="s5s-items"></div>
+                    <div class="s5s-photo-required" id="s5s-photo-warning">⚠️ 2점·4점 항목이 있으면 현장사진을 1장 이상 첨부해야 저장됩니다.</div>
+                </div>
+
+                <!-- 총점/등급 -->
+                <div class="s5s-score-total">
+                    <div class="sc-lbl">합계 점수 (130점 만점)</div>
+                    <div class="sc-num" id="s5s-total">0</div>
+                    <div class="sc-grade s5s-grade-D" id="s5s-grade">D</div>
+                    <div class="sc-note">A: 125점 이상 · B: 105~124 · C: 80~105 · D: 77 이하</div>
+                </div>
+
+                <!-- 비고 -->
+                <div class="s5s-card">
+                    <div class="s5s-card-title">4. 비고 (지도 및 수정사항)</div>
+                    <textarea id="s5s-memo" class="s5s-input" rows="3" style="resize:vertical;min-height:70px;" placeholder="추가 코멘트가 있으면 입력하세요"></textarea>
+                </div>
+
+                <!-- 저장 -->
+                <button class="s5s-save-btn" id="s5s-save-btn" onclick="s5sSave()">✅ 평가 저장</button>
+            </div>
+
+            <!-- ── TAB: 개선현황 ── -->
+            <div id="s5s-tab-improve" style="display:none;">
+                <div class="s5s-card">
+                    <div class="s5s-card-title">🔧 미개선 지적사항</div>
+                    <div style="font-size:11px;color:#64748b;margin-bottom:10px;">2점·4점 항목으로 지적된 사항 중 개선사진이 등록되지 않은 건입니다.</div>
+                    <div id="s5s-improve-list"><div class="s5s-list-empty">⏳ 불러오는 중...</div></div>
+                </div>
+            </div>
+
+            <!-- ── TAB: 이력조회 ── -->
+            <div id="s5s-tab-hist" style="display:none;">
+                <div class="s5s-card">
+                    <div class="s5s-card-title">📊 평가 이력</div>
+                    <div style="display:flex;gap:6px;margin-bottom:12px;">
+                        <select id="s5s-hist-zone" class="s5s-input" style="flex:1;" onchange="s5sLoadHistory()">
+                            <option value="">전체 구역</option>
+                            <option value="A">A 구역</option>
+                            <option value="B">B 구역</option>
+                            <option value="C">C 구역</option>
+                            <option value="D">D 구역</option>
+                        </select>
+                        <button class="s5s-photo-btn" onclick="s5sLoadHistory()" style="background:#10b981;">🔄 새로고침</button>
+                    </div>
+                    <div id="s5s-hist-list"><div class="s5s-list-empty">조회 버튼을 눌러주세요</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- ════════════ 점검 기록 조회 ════════════ -->
 <div id="pg-view" class="page scroll-page">
     <div class="back-bar">
@@ -705,11 +1196,25 @@ function openPage(id) {
         setTimeout(initCanvas, 300);
     }
     if(id==='pg-air') airLoadImages();
+    if(id==='pg-downtime') {
+        const dEl = document.getElementById('dt-date');
+        if(dEl && !dEl.value) {
+            const n = new Date(); n.setMinutes(n.getMinutes() - n.getTimezoneOffset());
+            dEl.value = n.toISOString().slice(0,16);
+        }
+        if(!document.getElementById('dt-checklist').innerHTML) dtRenderChecklist();
+    }
 }
 function goHome() {
     document.getElementById(curPage).classList.remove('active');
     document.getElementById('pg-home').classList.add('active');
     curPage = 'pg-home';
+}
+
+/* 구글시트 통합 점검대장 새 창으로 열기 */
+function openSheet() {
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1_3UiY4rbF0HY429kW1CY0gejmCXr9-Rg1SsSiXFCJZ4/edit';
+    window.open(SHEET_URL, '_blank', 'noopener,noreferrer');
 }
 window.addEventListener('popstate', ()=>{ if(curPage!=='pg-home') goHome(); });
 
@@ -1338,6 +1843,279 @@ function printPhoto() {
         document.getElementById(_photoPrefix + '-photoInput').click();
     }
 
+/* ════════════════════ 가동중단 관리 (DOWNTIME) JS ════════════════════ */
+/* 8대 카테고리 × 점검 항목 — 사용자 요청: 머리글 + 항목 드롭다운 */
+const DT_EQUIPMENTS = [
+    { num: 1, name: '프레스',          items: ['슬라이드 급유', '클러치/브레이크 응답', '다이쿠션 압력', '안전장치', '볼트 체결 확인'] },
+    { num: 2, name: '레디알 드릴링',   items: ['암/칼럼 윤활', '스핀들 이상음·진동', '클램프 고정력', '냉각수 노즐 점검'] },
+    { num: 3, name: 'NC 머시닝센터',   items: ['레벨링 재확인', '백업배터리 전압', '주축 단계별 웜업', 'ATC 동작', '절삭유 상태'] },
+    { num: 4, name: '성형 연마기',     items: ['스핀들 베어링 발열', '가이드 웨이 유막', '자석척 자력', '드레서 상태'] },
+    { num: 5, name: '콘도 머신(밴드쏘)', items: ['톱날 장력/마모', '가이드 롤러', '용접기 통전', '칩 퇴적물 제거'] },
+    { num: 6, name: '밀링기',          items: ['X·Y·Z축 백래시', '기어박스 변속음', '핸들/레버 유격 확인'] },
+    { num: 7, name: '에어 컴프레셔',   items: ['응축수 배출', '오일 레벨', '벨트 장력', '흡입필터 청소', '배관 누설 점검'] },
+    { num: 8, name: '크레인 (호이스트)', items: ['와이어로프 마모/킹크 점검', '후크·안전걸쇠 작동 확인', '브레이크 응답', '리미트스위치 동작', '주행·횡행 이상음 점검'] },
+];
+const DT_UNPLAN_EXTRA = { num: 99, name: '비계획 추가 점검', items: ['이상 부위 수리 완료', '시운전(Dry Run) 이상음 없음', '안전점검 재확인'] };
+
+/* 대상 설비 dropdown 값 → DT_EQUIPMENTS.name 매핑 (Section 2 필터링용) */
+const DT_MACHINE_MAP = {
+    'PRESS 1 (DS-200P)':   '프레스',
+    'PRESS 2 (DSW-200P)':  '프레스',
+    'PRESS 3 (BS-300P)':   '프레스',
+    '밀링2호 (SW-A-02)':   '밀링기',
+    'CNC MILLING 10호':    'NC 머시닝센터',
+    'RADIAL 우야-1250':    '레디알 드릴링',
+    'RADIAL 두산-1100':    '레디알 드릴링',
+    '크레인(2.8ton)':       '크레인 (호이스트)',
+    '크레인(5ton)':         '크레인 (호이스트)',
+    '콤푸레샤':             '에어 컴프레셔',
+};
+
+let dtSelections = {};   // { eqNum: { itemIdx: true } } — 항목별 개별 체크
+
+function dtResolveCategory(machineStr) {
+    if (!machineStr) return null;
+    if (DT_MACHINE_MAP[machineStr]) return DT_MACHINE_MAP[machineStr];
+    // 직접입력/자유 텍스트 — 키워드로 추정
+    const s = machineStr.toLowerCase();
+    if (s.includes('press') || s.includes('프레스')) return '프레스';
+    if (s.includes('radial') || s.includes('레디알') || s.includes('레이디얼')) return '레디알 드릴링';
+    if (s.includes('cnc') || s.includes('머시닝') || s.includes('마시닝')) return 'NC 머시닝센터';
+    if (s.includes('연마')) return '성형 연마기';
+    if (s.includes('콘도') || s.includes('밴드쏘')) return '콘도 머신(밴드쏘)';
+    if (s.includes('밀링') || s.includes('milling')) return '밀링기';
+    if (s.includes('컴프') || s.includes('콤푸') || s.includes('air')) return '에어 컴프레셔';
+    if (s.includes('크레인') || s.includes('호이스트')) return '크레인 (호이스트)';
+    return null;
+}
+
+function dtRenderChecklist() {
+    const typeVal = document.getElementById('dt-stopTypeSel').value;
+    const isUnplan = typeVal === 'unplan';
+
+    const machineStr = (document.getElementById('dt-machine').value || '').trim();
+    const category = dtResolveCategory(machineStr);
+
+    let list;
+    if (category) {
+        // 선택된 설비에 해당하는 카테고리만 필터
+        list = DT_EQUIPMENTS.filter(eq => eq.name === category);
+    } else {
+        // 미선택/매칭 실패 — 전체 8개 표시
+        list = DT_EQUIPMENTS;
+    }
+    if (isUnplan) list = [...list, DT_UNPLAN_EXTRA];
+
+    const badge = document.getElementById('dt-typeBadge');
+    badge.textContent = isUnplan ? '비계획정지' : '계획정지';
+    badge.className = isUnplan ? 'dt-badge unplan' : 'dt-badge plan';
+
+    dtSelections = {};
+    const wrap = document.getElementById('dt-checklist');
+
+    if (!machineStr) {
+        wrap.innerHTML = `
+            <div style="padding:18px 12px;text-align:center;color:#9ca3af;font-size:13px;background:#f9fafb;border:2px dashed #e5e7eb;border-radius:10px;">
+                ⬆️ 1번 항목에서 <b style="color:#dc2626;">대상 설비</b>를 먼저 선택하면<br>
+                해당 설비의 점검 내용만 표시됩니다.
+            </div>
+        `;
+        dtUpdateProgress();
+        return;
+    }
+
+    wrap.innerHTML = list.map(eq => `
+        <div class="dt-eq-block" id="dt-eq-${eq.num}">
+            <div class="dt-eq-head">
+                <div class="dt-eq-num">${eq.num === 99 ? '⚠' : eq.num}</div>
+                <div class="dt-eq-name">${eq.name}</div>
+                <div class="dt-eq-status" id="dt-eq-status-${eq.num}">0 / ${eq.items.length}</div>
+            </div>
+            <div class="dt-item-list">
+                ${eq.items.map((it, i) => `
+                    <div class="dt-item-row" id="dt-item-${eq.num}-${i}" onclick="dtToggleItem(${eq.num}, ${i})">
+                        <div class="dt-item-num">${i + 1}</div>
+                        <div class="dt-item-text">${it}</div>
+                        <div class="dt-item-chk" id="dt-chk-${eq.num}-${i}">✓</div>
+                    </div>
+                `).join('')}
+            </div>
+            <button class="dt-all-btn" id="dt-allbtn-${eq.num}" onclick="dtCheckAll(${eq.num})">✅ 전체 점검 완료</button>
+        </div>
+    `).join('');
+    dtUpdateProgress();
+}
+
+function dtAllEquipments() {
+    return [...DT_EQUIPMENTS, DT_UNPLAN_EXTRA];
+}
+
+function dtToggleItem(num, idx) {
+    if (!dtSelections[num]) dtSelections[num] = {};
+    if (dtSelections[num][idx]) {
+        delete dtSelections[num][idx];
+        if (Object.keys(dtSelections[num]).length === 0) delete dtSelections[num];
+    } else {
+        dtSelections[num][idx] = true;
+    }
+    const row = document.getElementById('dt-item-' + num + '-' + idx);
+    const checked = !!(dtSelections[num] && dtSelections[num][idx]);
+    if (row) row.classList.toggle('checked', checked);
+    dtUpdateStatus(num);
+    dtUpdateProgress();
+}
+
+function dtCheckAll(num) {
+    const eq = dtAllEquipments().find(e => e.num === num);
+    if (!eq) return;
+    const allDone = dtSelections[num] && Object.keys(dtSelections[num]).length === eq.items.length;
+    if (allDone) {
+        // 모두 체크된 상태에서 한 번 더 누르면 전체 해제
+        delete dtSelections[num];
+        eq.items.forEach((_, i) => {
+            const row = document.getElementById('dt-item-' + num + '-' + i);
+            if (row) row.classList.remove('checked');
+        });
+    } else {
+        dtSelections[num] = {};
+        eq.items.forEach((_, i) => {
+            dtSelections[num][i] = true;
+            const row = document.getElementById('dt-item-' + num + '-' + i);
+            if (row) row.classList.add('checked');
+        });
+    }
+    dtUpdateStatus(num);
+    dtUpdateProgress();
+}
+
+function dtUpdateStatus(num) {
+    const eq = dtAllEquipments().find(e => e.num === num);
+    if (!eq) return;
+    const done = Object.keys(dtSelections[num] || {}).length;
+    const total = eq.items.length;
+    const status = document.getElementById('dt-eq-status-' + num);
+    if (status) status.textContent = done + ' / ' + total;
+    const block = document.getElementById('dt-eq-' + num);
+    if (block) block.classList.toggle('checked', done === total);
+    const btn = document.getElementById('dt-allbtn-' + num);
+    if (btn) {
+        btn.classList.toggle('done', done === total);
+        btn.textContent = (done === total) ? '✓ 전체 완료 (해제하려면 클릭)' : '✅ 전체 점검 완료';
+    }
+}
+
+function dtUpdateProgress() {
+    let total = 0, done = 0;
+    document.querySelectorAll('#dt-checklist .dt-eq-block').forEach(b => {
+        const id = parseInt((b.id || '').replace('dt-eq-', ''));
+        const eq = dtAllEquipments().find(e => e.num === id);
+        if (!eq) return;
+        total += eq.items.length;
+        done += Object.keys(dtSelections[id] || {}).length;
+    });
+    const pct = total ? Math.round(done / total * 100) : 0;
+    const fill = document.getElementById('dt-progFill');
+    const text = document.getElementById('dt-progText');
+    if (fill) fill.style.width = pct + '%';
+    if (text) text.textContent = done + ' / ' + total;
+}
+
+function dtSyncMachine() {
+    const sel = document.getElementById('dt-machineSel').value;
+    const txt = document.getElementById('dt-machine');
+    if (sel === '직접입력') { txt.value = ''; txt.focus(); }
+    else if (sel) { txt.value = sel; }
+    dtRenderChecklist();
+}
+
+function dtSyncStopType() {
+    dtRenderChecklist();
+}
+
+function dtSyncWorker() {
+    const sel = document.getElementById('dt-workerSel').value;
+    const txt = document.getElementById('dt-worker');
+    if (sel === '직접입력') { txt.value = ''; txt.focus(); }
+    else if (sel) { txt.value = sel; }
+}
+
+function dtSave() {
+    const date = document.getElementById('dt-date').value;
+    const machine = document.getElementById('dt-machine').value.trim();
+    const stopTypeSel = document.getElementById('dt-stopTypeSel').value;
+    const stopType = stopTypeSel === 'plan' ? '계획정지' : (stopTypeSel === 'unplan' ? '비계획정지' : '직접입력');
+    const reason = document.getElementById('dt-reason').value.trim();
+    const action = document.getElementById('dt-action').value.trim();
+    const worker = document.getElementById('dt-worker').value.trim();
+
+    if (!date)    { alert('⚠️ 발생 일시를 입력하세요.'); return; }
+    if (!machine) { alert('⚠️ 대상 설비를 선택하거나 입력하세요.'); return; }
+    if (!worker)  { alert('⚠️ 작업자를 입력하세요.'); return; }
+
+    let total = 0, done = 0;
+    const checklistOut = {};
+    document.querySelectorAll('#dt-checklist .dt-eq-block').forEach(b => {
+        const id = parseInt((b.id || '').replace('dt-eq-', ''));
+        const eq = dtAllEquipments().find(e => e.num === id);
+        if (!eq) return;
+        total += eq.items.length;
+        const checks = Object.keys(dtSelections[id] || {})
+            .map(i => eq.items[parseInt(i)])
+            .filter(Boolean);
+        done += checks.length;
+        if (checks.length) checklistOut[eq.name] = checks;
+    });
+    if (done < total) {
+        if (!confirm(`재가동 전 점검이 ${done}/${total} 항목만 완료되었습니다.\n그래도 저장하시겠습니까?`)) return;
+    }
+
+    const rec = {
+        no: parseInt(localStorage.getItem('downtime_no') || '1'),
+        date: date.replace('T', ' '),
+        machine, stopType, reason,
+        checklist: checklistOut,
+        action, worker,
+        savedAt: new Date().toISOString(),
+    };
+    const logs = JSON.parse(localStorage.getItem('downtime_v1') || '[]');
+    logs.push(rec);
+    localStorage.setItem('downtime_v1', JSON.stringify(logs));
+    localStorage.setItem('downtime_no', String(rec.no + 1));
+
+    // 결재 동기화 (캐시 + 자동 전송)
+    try { _saveFacilityCache('가동중단', date.substring(0, 10), worker, machine); } catch(e) {}
+
+    // ── 통합 점검대장 시트 (가동중단관리 탭) 전송 ──
+    const categoryNames = Object.keys(checklistOut);
+    const detailStr = categoryNames.length
+        ? categoryNames.map(cat => '[' + cat + '] ' + checklistOut[cat].join(', ')).join(' / ')
+        : '';
+    const gsPayload = {
+        formType: 'downtime',
+        date:     date.replace('T', ' '),
+        machine, stopType, reason,
+        categories:      categoryNames.join(', '),
+        checklistDetail: detailStr,
+        progress:        done + '/' + total,
+        action, worker
+    };
+    fetch(GS_URL, {
+        method: 'POST', mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(gsPayload)
+    }).catch(err => console.warn('[가동중단 시트 전송 오류]', err));
+
+    alert('✅ 저장 완료!\n\n' + machine + ' · ' + stopType + '\n점검: ' + done + '/' + total + ' 항목\n\n📊 통합 점검대장 시트(가동중단관리 탭)에 기록되었습니다.');
+
+    // 초기화
+    document.getElementById('dt-reason').value = '';
+    document.getElementById('dt-action').value = '';
+    document.getElementById('dt-machineSel').value = '';
+    document.getElementById('dt-machine').value = '';
+    dtRenderChecklist();
+    goHome();
+}
+
 /* ════════════ 결재 동기화 ════════════ */
 const _APPROVAL_API = 'https://script.google.com/macros/s/AKfycbzQP4Wr_j4JBLoyg-f6r1o5pYv6fbe-fX7wk_4MCi7Ew0cHmBCptjDe3CFNGC1HXEhf2Q/exec';
 
@@ -1399,6 +2177,371 @@ async function syncFacilityToApproval() {
         alert(`✅ 결재 동기화 완료! 총 ${totalSynced}건`);
     } catch(e) { alert('❌ 오류: ' + e.message); }
 }
+
+/* ════════════════════ 3정5S 활동 평가 (S5S) JS ════════════════════ */
+const S5S_ITEMS = [
+  {cat:'정위치', no:1,  txt:'각종 작업도구,물품을 보관하기 위한 공간 지정이 되어 있는가?'},
+  {cat:'정위치', no:2,  txt:'그 위치는 작업을 하는데 효율적인 곳인가?'},
+  {cat:'정품',   no:3,  txt:'각 위치 보관 공간을 위한 식별표시, 구획선은 되어 있는가?'},
+  {cat:'정품',   no:4,  txt:'식별표시의 용도는 알기 쉽게 되어 있는가?'},
+  {cat:'정량',   no:5,  txt:'각종 도구,물품의 작업을 위한 적정량이 정해져 있으며 표기 되어 있는가?'},
+  {cat:'정리',   no:6,  txt:'지정된 보관장소에 다른 물품이 혼재되어 보관되지는 않는가?'},
+  {cat:'정리',   no:7,  txt:'없어도 되는 물건(불용품)을 보관하지는 않는가?'},
+  {cat:'정리',   no:8,  txt:'폐기 또는 반납 등을 위한 공간이 마련되고 활용되어지는가?'},
+  {cat:'정돈',   no:9,  txt:'바닥,통로,보관 공간을 위한 구획선이 잘 표시 되었는가?'},
+  {cat:'정돈',   no:10, txt:'각종 물품들이 지정된 장소에 적정량을 유지하며 보관,관리되는가?'},
+  {cat:'정돈',   no:11, txt:'<작업도구,소재,제품,소화기,검사구,등> 정돈된 물품들이 찾기 쉽고 안전하게 놓여 있는가?'},
+  {cat:'청결',   no:12, txt:'작업 공간 주위에 불필요한 유해 요소가 있지 않은가?'},
+  {cat:'청결',   no:13, txt:'작업공구,설비,컴퓨터등에 먼지나 이물질이 묻어 있지 않은가?'}
+];
+const S5S_SCORE_OPTIONS = [2, 4, 6, 8, 10];
+
+let s5sState = {
+    zone: '',
+    scores: {},       // { 1: 8, 2: 10, ... }
+    itemPhotos: {},   // { 1: [{b64, caption}], ... } — 지적사진 (항목별)
+    editingId: ''     // 기존 건 개선 시 사용
+};
+
+function s5sInit() {
+    // 날짜 기본값 = 오늘
+    const d = new Date();
+    const today = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    if (!document.getElementById('s5s-date').value) document.getElementById('s5s-date').value = today;
+    // 13항목 한 번만 렌더
+    if (!document.getElementById('s5s-items').dataset.rendered) {
+        s5sRenderItems();
+        document.getElementById('s5s-items').dataset.rendered = '1';
+    }
+    s5sCalcTotal();
+}
+
+function s5sShowTab(tab) {
+    document.querySelectorAll('#pg-3s5s .s5s-tab').forEach(el => {
+        el.classList.toggle('active', el.dataset.tab === tab);
+    });
+    document.getElementById('s5s-tab-eval').style.display    = (tab === 'eval')    ? '' : 'none';
+    document.getElementById('s5s-tab-improve').style.display = (tab === 'improve') ? '' : 'none';
+    document.getElementById('s5s-tab-hist').style.display    = (tab === 'hist')    ? '' : 'none';
+    if (tab === 'improve') s5sLoadImprove();
+    if (tab === 'hist')    s5sLoadHistory();
+}
+
+function s5sSelectZone(z) {
+    s5sState.zone = z;
+    document.querySelectorAll('#pg-3s5s .s5s-zone-btn').forEach(el => {
+        el.classList.toggle('selected', el.dataset.zone === z);
+    });
+    document.querySelectorAll('#pg-3s5s .s5s-zone-rect').forEach(el => {
+        el.classList.toggle('selected', el.classList.contains('zone-' + z));
+    });
+}
+
+function s5sRenderItems() {
+    const box = document.getElementById('s5s-items');
+    let html = '';
+    S5S_ITEMS.forEach(it => {
+        html += '<div class="s5s-item" data-no="' + it.no + '">';
+        html +=   '<div class="s5s-item-head">';
+        html +=     '<span class="s5s-item-cat ' + it.cat + '">' + it.cat + '</span>';
+        html +=     '<div class="s5s-item-text"><span class="s5s-item-no">' + it.no + '.</span>' + it.txt + '</div>';
+        html +=   '</div>';
+        html +=   '<div class="s5s-score-row">';
+        S5S_SCORE_OPTIONS.forEach(s => {
+            html += '<button type="button" class="s5s-score-btn" data-score="' + s + '" onclick="s5sSetScore(' + it.no + ',' + s + ')">' + s + '</button>';
+        });
+        html +=   '</div>';
+        html +=   '<div class="s5s-photo-zone" id="s5s-pz-' + it.no + '" style="display:none;">';
+        html +=     '<button type="button" class="s5s-photo-btn" onclick="document.getElementById(\'s5s-file-' + it.no + '\').click()">📸 현장사진 첨부</button>';
+        html +=     '<input type="file" id="s5s-file-' + it.no + '" accept="image/*" capture="environment" style="display:none" onchange="s5sAddPhoto(' + it.no + ', this.files)">';
+        html +=     '<div class="s5s-photo-list" id="s5s-pl-' + it.no + '"></div>';
+        html +=   '</div>';
+        html += '</div>';
+    });
+    box.innerHTML = html;
+}
+
+function s5sSetScore(no, score) {
+    s5sState.scores[no] = score;
+    const item = document.querySelector('.s5s-item[data-no="' + no + '"]');
+    item.querySelectorAll('.s5s-score-btn').forEach(b => {
+        b.classList.toggle('selected', parseInt(b.dataset.score) === score);
+    });
+    // 2점·4점이면 사진 영역 표시
+    document.getElementById('s5s-pz-' + no).style.display = (score === 2 || score === 4) ? 'block' : 'none';
+    s5sCalcTotal();
+}
+
+function s5sCalcTotal() {
+    let total = 0;
+    Object.values(s5sState.scores).forEach(v => total += (parseInt(v, 10) || 0));
+    document.getElementById('s5s-total').textContent = total;
+    const grade = total >= 125 ? 'A' : total >= 105 ? 'B' : total >= 80 ? 'C' : 'D';
+    const el = document.getElementById('s5s-grade');
+    el.textContent = grade;
+    el.className = 'sc-grade s5s-grade-' + grade;
+    // 사진 경고 표시 여부
+    const need24 = Object.values(s5sState.scores).some(v => v === 2 || v === 4);
+    document.getElementById('s5s-photo-warning').classList.toggle('show', need24);
+}
+
+function s5sAddPhoto(no, files) {
+    if (!files || files.length === 0) return;
+    const file = files[0];
+    if (!file.type.startsWith('image/')) { alert('이미지 파일만 첨부 가능합니다.'); return; }
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        // 리사이즈 (가로 1280px max)
+        const img = new Image();
+        img.onload = function() {
+            const maxW = 1280;
+            let w = img.width, h = img.height;
+            if (w > maxW) { h = h * maxW / w; w = maxW; }
+            const cv = document.createElement('canvas');
+            cv.width = w; cv.height = h;
+            cv.getContext('2d').drawImage(img, 0, 0, w, h);
+            const b64 = cv.toDataURL('image/jpeg', 0.82);
+            if (!s5sState.itemPhotos[no]) s5sState.itemPhotos[no] = [];
+            s5sState.itemPhotos[no].push({ b64: b64, itemNo: no });
+            s5sRenderItemPhotos(no);
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+    document.getElementById('s5s-file-' + no).value = '';
+}
+
+function s5sRenderItemPhotos(no) {
+    const list = document.getElementById('s5s-pl-' + no);
+    const arr = s5sState.itemPhotos[no] || [];
+    let html = '';
+    arr.forEach((p, i) => {
+        html += '<div class="s5s-photo-thumb">';
+        html +=   '<img src="' + p.b64 + '" onclick="s5sPreviewPhoto(\'' + p.b64 + '\')">';
+        html +=   '<button class="del" onclick="s5sDelPhoto(' + no + ',' + i + ')">×</button>';
+        html += '</div>';
+    });
+    list.innerHTML = html;
+}
+
+function s5sDelPhoto(no, idx) {
+    if (!s5sState.itemPhotos[no]) return;
+    s5sState.itemPhotos[no].splice(idx, 1);
+    s5sRenderItemPhotos(no);
+}
+
+function s5sPreviewPhoto(src) {
+    const w = window.open('', '_blank');
+    w.document.write('<html><head><title>사진</title></head><body style="margin:0;background:#000;text-align:center"><img src="' + src + '" style="max-width:100vw;max-height:100vh;"></body></html>');
+}
+
+function s5sValidate() {
+    if (!s5sState.zone) return '평가 구역을 선택하세요.';
+    if (!document.getElementById('s5s-date').value) return '평가일자를 입력하세요.';
+    if (!document.getElementById('s5s-evaluator').value.trim()) return '평가자를 입력하세요.';
+    if (!document.getElementById('s5s-mgr-main').value.trim()) return '관리담당(정)을 입력하세요.';
+    if (Object.keys(s5sState.scores).length < 13) return '13개 항목 모두 점수를 선택하세요. (남은 항목: ' + (13 - Object.keys(s5sState.scores).length) + '개)';
+    // 2·4점 항목 사진 검증
+    const need = [];
+    Object.entries(s5sState.scores).forEach(([no, s]) => {
+        if ((s === 2 || s === 4) && (!s5sState.itemPhotos[no] || s5sState.itemPhotos[no].length === 0)) {
+            need.push(no);
+        }
+    });
+    if (need.length > 0) return '⚠️ 2점·4점 항목은 현장사진이 필수입니다.\n사진 미첨부 항목: ' + need.join(', ') + '번';
+    return null;
+}
+
+async function s5sSave() {
+    const err = s5sValidate();
+    if (err) { alert(err); return; }
+    const btn = document.getElementById('s5s-save-btn');
+    btn.disabled = true; btn.textContent = '💾 전송 중...';
+
+    // 지적사진 → 단일 배열로 평탄화 (itemNo 보존)
+    const allPhotos = [];
+    Object.entries(s5sState.itemPhotos).forEach(([no, arr]) => {
+        arr.forEach(p => allPhotos.push({ b64: p.b64, itemNo: parseInt(no), caption: '' }));
+    });
+
+    const payload = {
+        formType: 's5s_upsert',
+        _id: s5sState.editingId || '',
+        평가일: document.getElementById('s5s-date').value,
+        구역: s5sState.zone,
+        평가자: document.getElementById('s5s-evaluator').value.trim(),
+        관리담당정: document.getElementById('s5s-mgr-main').value.trim(),
+        관리담당부: document.getElementById('s5s-mgr-sub').value.trim(),
+        점수: s5sState.scores,
+        비고: document.getElementById('s5s-memo').value.trim(),
+        지적사진: allPhotos
+    };
+
+    try {
+        const res = await fetch(GS_URL, {
+            method: 'POST',
+            body: JSON.stringify(payload),
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+        });
+        const json = await res.json();
+        if (json.status !== 'ok') throw new Error(json.message || '저장 실패');
+        alert('✅ 평가 저장 완료!\n\n구역: ' + s5sState.zone + ' · 합계: ' + json.합계 + '점 · 등급: ' + json.등급);
+        s5sResetForm();
+    } catch(e) {
+        alert('❌ 전송 실패: ' + e.message + '\n\n네트워크 확인 후 다시 시도하세요.');
+    } finally {
+        btn.disabled = false; btn.textContent = '✅ 평가 저장';
+    }
+}
+
+function s5sResetForm() {
+    s5sState = { zone:'', scores:{}, itemPhotos:{}, editingId:'' };
+    document.querySelectorAll('#pg-3s5s .s5s-zone-btn').forEach(el => el.classList.remove('selected'));
+    document.querySelectorAll('#pg-3s5s .s5s-zone-rect').forEach(el => el.classList.remove('selected'));
+    document.querySelectorAll('#pg-3s5s .s5s-score-btn').forEach(el => el.classList.remove('selected'));
+    document.querySelectorAll('#pg-3s5s .s5s-photo-zone').forEach(el => { el.style.display = 'none'; });
+    document.querySelectorAll('#pg-3s5s .s5s-photo-list').forEach(el => { el.innerHTML = ''; });
+    document.getElementById('s5s-evaluator').value = '';
+    document.getElementById('s5s-mgr-main').value = '';
+    document.getElementById('s5s-mgr-sub').value = '';
+    document.getElementById('s5s-memo').value = '';
+    s5sCalcTotal();
+}
+
+async function s5sLoadHistory() {
+    const list = document.getElementById('s5s-hist-list');
+    list.innerHTML = '<div class="s5s-list-empty">⏳ 불러오는 중...</div>';
+    try {
+        const res = await fetch(GS_URL + '?action=loadAll&type=s5s');
+        const json = await res.json();
+        const recs = (json.records || []).slice().reverse(); // 최신순
+        const zoneFilter = document.getElementById('s5s-hist-zone').value;
+        const filtered = zoneFilter ? recs.filter(r => r['구역'] === zoneFilter) : recs;
+        if (filtered.length === 0) {
+            list.innerHTML = '<div class="s5s-list-empty">평가 이력이 없습니다.</div>';
+            return;
+        }
+        let html = '';
+        filtered.forEach(r => {
+            const grade = r['등급'] || 'D';
+            const gradeColor = grade === 'A' ? '#10b981' : grade === 'B' ? '#3b82f6' : grade === 'C' ? '#f59e0b' : '#dc2626';
+            let thumbHtml = '';
+            try {
+                const bef = JSON.parse(r['지적사진URLs'] || '[]');
+                const aft = JSON.parse(r['개선사진URLs'] || '[]');
+                bef.slice(0, 4).forEach(p => { thumbHtml += '<img src="' + p.url + '" title="지적사진" onclick="s5sPreviewPhoto(\'' + p.url + '\')">'; });
+                aft.slice(0, 4).forEach(p => { thumbHtml += '<img src="' + p.url + '" title="개선사진" style="border:2px solid #10b981" onclick="s5sPreviewPhoto(\'' + p.url + '\')">'; });
+            } catch(e) {}
+            html += '<div class="s5s-hist-card ' + grade + '">';
+            html +=   '<div class="s5s-hist-head"><div class="s5s-hist-zone">' + (r['구역'] || '?') + '구역 · ' + (r['평가일'] || '') + '</div>';
+            html +=   '<div class="s5s-hist-grade" style="background:' + gradeColor + '">' + grade + ' · ' + (r['합계'] || 0) + '점</div></div>';
+            html +=   '<div class="s5s-hist-meta">평가자: ' + (r['평가자'] || '-') + ' · 관리담당: ' + (r['관리담당정'] || '-') + ' / ' + (r['관리담당부'] || '-') + '</div>';
+            if (thumbHtml) html += '<div class="s5s-hist-photos">' + thumbHtml + '</div>';
+            html += '</div>';
+        });
+        list.innerHTML = html;
+    } catch(e) {
+        list.innerHTML = '<div class="s5s-list-empty" style="color:#dc2626">조회 실패: ' + e.message + '</div>';
+    }
+}
+
+async function s5sLoadImprove() {
+    const list = document.getElementById('s5s-improve-list');
+    list.innerHTML = '<div class="s5s-list-empty">⏳ 불러오는 중...</div>';
+    try {
+        const res = await fetch(GS_URL + '?action=loadAll&type=s5s');
+        const json = await res.json();
+        const recs = (json.records || []).filter(r => {
+            // 지적사진이 있고 + 개선사진이 비었거나 개선일자가 없으면 미개선
+            try {
+                const bef = JSON.parse(r['지적사진URLs'] || '[]');
+                const aft = JSON.parse(r['개선사진URLs'] || '[]');
+                return bef.length > 0 && (aft.length === 0 || !r['개선일자']);
+            } catch(e) { return false; }
+        }).reverse();
+        if (recs.length === 0) {
+            list.innerHTML = '<div class="s5s-list-empty">🎉 미개선 지적사항이 없습니다!</div>';
+            return;
+        }
+        let html = '';
+        recs.forEach(r => {
+            const grade = r['등급'] || 'D';
+            let thumbHtml = '';
+            try {
+                const bef = JSON.parse(r['지적사진URLs'] || '[]');
+                bef.forEach(p => { thumbHtml += '<img src="' + p.url + '" onclick="s5sPreviewPhoto(\'' + p.url + '\')">'; });
+            } catch(e) {}
+            html += '<div class="s5s-hist-card ' + grade + '">';
+            html +=   '<div class="s5s-hist-head"><div class="s5s-hist-zone">' + (r['구역'] || '?') + '구역 · ' + (r['평가일'] || '') + '</div>';
+            html +=   '<div class="s5s-hist-grade" style="background:#dc2626">미개선</div></div>';
+            html +=   '<div class="s5s-hist-meta">평가자: ' + (r['평가자'] || '-') + '</div>';
+            html +=   '<div class="s5s-hist-photos">' + thumbHtml + '</div>';
+            html +=   '<button class="s5s-improve-btn" onclick="s5sUploadImprovement(\'' + r['_id'] + '\',\'' + (r['구역'] || '') + '\',\'' + (r['평가일'] || '') + '\')">📸 개선 사진 등록</button>';
+            html += '</div>';
+        });
+        list.innerHTML = html;
+    } catch(e) {
+        list.innerHTML = '<div class="s5s-list-empty" style="color:#dc2626">조회 실패: ' + e.message + '</div>';
+    }
+}
+
+function s5sUploadImprovement(id, zone, evalDate) {
+    const inp = document.createElement('input');
+    inp.type = 'file'; inp.accept = 'image/*'; inp.capture = 'environment';
+    inp.onchange = function() {
+        const f = inp.files[0]; if (!f) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = async function() {
+                const maxW = 1280;
+                let w = img.width, h = img.height;
+                if (w > maxW) { h = h * maxW / w; w = maxW; }
+                const cv = document.createElement('canvas');
+                cv.width = w; cv.height = h;
+                cv.getContext('2d').drawImage(img, 0, 0, w, h);
+                const b64 = cv.toDataURL('image/jpeg', 0.82);
+                const today = new Date().toISOString().substring(0, 10);
+                try {
+                    const res = await fetch(GS_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            formType: 's5s_upsert',
+                            _id: id,
+                            구역: zone,
+                            평가일: evalDate,
+                            개선일자: today,
+                            개선사진: [{ b64: b64, caption: '' }]
+                        }),
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+                    });
+                    const json = await res.json();
+                    if (json.status !== 'ok') throw new Error(json.message || '실패');
+                    alert('✅ 개선 사진 등록 완료!');
+                    s5sLoadImprove();
+                } catch(err) {
+                    alert('❌ 실패: ' + err.message);
+                }
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(f);
+    };
+    inp.click();
+}
+
+// 페이지 진입 시 자동 init: openPage 패치 (기존 함수는 보존, 호출 후 추가 동작만 부착)
+(function(){
+    if (typeof openPage !== 'function') return;
+    const _origOpenPage = openPage;
+    openPage = function(id) {
+        const r = _origOpenPage.apply(this, arguments);
+        if (id === 'pg-3s5s') {
+            try { s5sInit(); } catch(e) { console.warn('s5sInit error:', e); }
+        }
+        return r;
+    };
+})();
 
 </script>
 </body>

@@ -14,9 +14,16 @@ const SHEET_NAMES = {
   equip_콘도머신:  '콘도머신',
   equip_밀링2호기: '밀링2호기',
   equip_CNC10호기: 'CNC10호기',
-  press:  '프레스점검',
-  radial: '레디알점검',
-  air:    '에어컴프레서'
+  press:    '프레스점검',
+  radial:   '레디알점검',
+  air:      '에어컴프레서',
+  downtime: '가동중단관리',
+  // 수입검사 통합관리 (3종) — _id 기반 upsert/delete 사용
+  inspection: '수입검사대장',
+  ncr:        '부적합NCR',
+  heat:       '열처리성적서',
+  // 3정5S 활동 평가 — _id 기반 upsert/delete (NCR 패턴 차용)
+  s5s:        '3정5S평가'
 };
 
 // 시트 헤더 (첫 행, 최초 1회만 자동 생성)
@@ -25,9 +32,16 @@ const SHEET_HEADERS = {
   equip_콘도머신:  ['제출시간','날짜','점검자','설비명','톱날상태(육안)','톱날정위치확인','특이사항','사진링크'],
   equip_밀링2호기: ['제출시간','날짜','점검자','설비명','벨트상태','오일점검(베드)','특이사항','사진링크'],
   equip_CNC10호기: ['제출시간','날짜','점검자','설비명','슬동유탱크유량','스핀들온도','절삭유유량','에어유니트압력(MPa)','절삭유농도(%)','특이사항','사진링크'],
-  press:  ['제출시간','날짜','설비명','점검자','안전센서','OK마스터','오일레벨','금형클램프','V.S레버','메인에어(kgf)','클러치(kgf)','전압(V)','특이사항','서명여부','사진링크'],
-  radial: ['제출시간','날짜','점검자','설비명','오일레벨','유/공압','작동램프','이송/고정','절삭유','변속RPM','척/전원','소음청결','특이사항','사진링크'],
-  air:    ['제출시간','날짜','점검자','오일레벨','응축수배출','흡입필터','배관누설','토출압력(MPa)','토출온도(℃)','가동시간(h)','특이사항','사진링크']
+  press:    ['제출시간','날짜','설비명','점검자','안전센서','OK마스터','오일레벨','금형클램프','V.S레버','메인에어(kgf)','클러치(kgf)','전압(V)','특이사항','서명여부','사진링크'],
+  radial:   ['제출시간','날짜','점검자','설비명','오일레벨','유/공압','작동램프','이송/고정','절삭유','변속RPM','척/전원','소음청결','특이사항','사진링크'],
+  air:      ['제출시간','날짜','점검자','오일레벨','응축수배출','흡입필터','배관누설','토출압력(MPa)','토출온도(℃)','가동시간(h)','특이사항','사진링크'],
+  downtime: ['제출시간','발생일시','설비명','중단유형','중단사유','점검카테고리','점검완료항목','진행률','조치내용','작업자'],
+  // 수입검사 통합관리
+  inspection: ['_id','차종','품번','입고일','품명','규격','재질','수량','수량판정','외관','외관치수','종합판정','비고','수정시간'],
+  ncr:        ['_id','No','작성일','품명','품번','불량유형','발생원인','대책내용','담당자','전사진URLs','후사진URLs','수정시간'],
+  heat:       ['_id','jobKey','차종','도번','발신','날짜','연도1','연도2','사인0URL','사인1URL','사인2URL','rowsJSON','첨부URLs','수정시간'],
+  // 3정5S 평가: 13항목 점수 + 등급 + 지적/개선 사진 URL 배열 + 개선일자
+  s5s:        ['_id','평가일','구역','평가자','관리담당정','관리담당부','점수JSON','합계','등급','지적사진URLs','개선사진URLs','개선일자','비고','수정시간']
 };
 
 // 앱에서 보내는 machine 값 → SHEET_NAMES 키 매핑
@@ -45,6 +59,19 @@ function doPost(e) {
   try {
     const payload  = JSON.parse(e.postData.contents);
     const formType = payload.formType;
+
+    // ── 수입검사 통합관리: upsert / delete (3종) ──
+    if (/^(inspection|ncr|heat)_(upsert|delete)$/.test(formType)) {
+      const m = formType.match(/^(.+)_(upsert|delete)$/);
+      if (m[2] === 'upsert') return jsonRes(handleQmsUpsert(m[1], payload));
+      if (m[2] === 'delete') return jsonRes(handleQmsDelete(m[1], payload));
+    }
+
+    // ── 3정5S 활동 평가: upsert / delete ──
+    if (/^s5s_(upsert|delete)$/.test(formType)) {
+      if (formType === 's5s_upsert') return jsonRes(handleS5sUpsert(payload));
+      if (formType === 's5s_delete') return jsonRes(handleS5sDelete(payload));
+    }
 
     // equip 타입이면 machine 값으로 설비별 시트 분기
     let resolvedType = formType;
@@ -113,6 +140,12 @@ function doGet(e) {
     const type    = (e.parameter.type) || 'equip_성형연마기';
     const records = getSheetData(type);
     return jsonRes({ status: 'ok', records: records });
+  }
+
+  // 수입검사 통합관리 — 객체 배열로 전체 로드
+  if (action === 'loadAll') {
+    const type = e.parameter.type || '';
+    return jsonRes({ status: 'ok', records: handleQmsLoadAll(type) });
   }
 
   // 기본: 브라우저에서 URL 열면 웹 뷰어 페이지
@@ -217,6 +250,13 @@ function buildRow(formType, p, imageUrl) {
             p.memo||'', imageUrl];
   }
 
+  if (formType === 'downtime') {
+    // 발생일시(p.date)는 'YYYY-MM-DD HH:mm' 형식, 그대로 저장
+    return [now, p.date||'', p.machine||'', p.stopType||'', p.reason||'',
+            p.categories||'', p.checklistDetail||'', p.progress||'',
+            p.action||'', p.worker||''];
+  }
+
   return [now, JSON.stringify(p)]; // fallback
 }
 
@@ -278,6 +318,8 @@ function buildViewerHtml() {
        + '    <option value="press">프레스 점검</option>\n'
        + '    <option value="radial">레디알 점검</option>\n'
        + '    <option value="air">에어 컴프레서</option>\n'
+       + '    <option value="downtime">🚨 가동중단 관리</option>\n'
+       + '    <option value="s5s">🧹 3정5S 평가</option>\n'
        + '  </select>\n'
        + '  <button onclick="load()">🔍 조회</button>\n'
        + '  <span id="st" class="status"></span>\n'
@@ -336,4 +378,352 @@ function buildViewerHtml() {
        + 'function doPrint(){const url=document.getElementById("pi").src;const w=window.open("","_blank");w.document.write("<!DOCTYPE html><html><head><title>점검 사진 인쇄</title><style>body{margin:20px;text-align:center}img{max-width:100%;max-height:85vh;border-radius:8px}.pb{margin-top:16px;padding:12px 32px;background:#1155ff;color:white;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer}@media print{.pb{display:none}}</style></head><body><img src=\\""+url+"\\"><br><button class=\'pb\' onclick=\'window.print()\'>🖨️ 인쇄</button></body></html>");w.document.close();}\n'
        + '<\/script>\n'
        + '</body></html>';
+}
+
+// ════════════════════════════════════════════════════════════
+// 수입검사 통합관리 — _id 기반 upsert/delete/loadAll
+// ════════════════════════════════════════════════════════════
+
+function handleQmsUpsert(type, p) {
+  if (!SHEET_NAMES[type]) return { status: 'error', message: 'unknown type: ' + type };
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheetName = SHEET_NAMES[type];
+  let sheet = ss.getSheetByName(sheetName);
+  if (!sheet) sheet = ss.insertSheet(sheetName);
+
+  // 헤더 행 (처음 한 번만)
+  if (sheet.getLastRow() === 0) {
+    const hdr = SHEET_HEADERS[type];
+    sheet.appendRow(hdr);
+    sheet.getRange(1, 1, 1, hdr.length)
+         .setBackground('#1e3a5f').setFontColor('white').setFontWeight('bold');
+    sheet.setFrozenRows(1);
+  }
+
+  // _id 확보
+  if (!p._id) p._id = 'r_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+
+  // 사진/파일 base64 → Drive URL 변환
+  if (type === 'ncr') {
+    p.beforeUrls = uploadPhotoArray(p.beforePhotos, p._id, 'ncr_before');
+    p.afterUrls  = uploadPhotoArray(p.afterPhotos,  p._id, 'ncr_after');
+  }
+  if (type === 'heat') {
+    if (Array.isArray(p.signs)) {
+      p.signUrls = p.signs.map((s, i) => {
+        if (!s) return '';
+        if (typeof s === 'string' && s.startsWith('http')) return s;
+        if (typeof s === 'string' && s.startsWith('data:')) return saveImageToDrive(s, p.date || '', 'heat_sign_' + i);
+        return '';
+      });
+    } else {
+      p.signUrls = ['', '', ''];
+    }
+    if (Array.isArray(p.atts)) {
+      p.attUrls = p.atts.map(a => {
+        if (a.url && String(a.url).startsWith('http')) return { name: a.name, type: a.type || '', url: a.url };
+        if (a.b64) return { name: a.name, type: a.type || '', url: saveFileToDrive(a.b64, a.name, 'heat_att') };
+        return null;
+      }).filter(Boolean);
+    } else {
+      p.attUrls = [];
+    }
+  }
+
+  const row = buildQmsRow(type, p);
+
+  // 기존 행 찾기 (_id 매칭)
+  const last = sheet.getLastRow();
+  let foundRow = -1;
+  if (last > 1) {
+    const ids = sheet.getRange(2, 1, last - 1, 1).getValues();
+    for (let i = 0; i < ids.length; i++) {
+      if (String(ids[i][0]) === String(p._id)) { foundRow = i + 2; break; }
+    }
+  }
+
+  if (foundRow > 0) {
+    sheet.getRange(foundRow, 1, 1, row.length).setValues([row]);
+  } else {
+    sheet.appendRow(row);
+  }
+
+  return {
+    status: 'ok', _id: p._id,
+    beforeUrls: p.beforeUrls || null,
+    afterUrls:  p.afterUrls  || null,
+    signUrls:   p.signUrls   || null,
+    attUrls:    p.attUrls    || null
+  };
+}
+
+function handleQmsDelete(type, p) {
+  if (!SHEET_NAMES[type]) return { status: 'error', message: 'unknown type: ' + type };
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheet = ss.getSheetByName(SHEET_NAMES[type]);
+  if (!sheet) return { status: 'ok', deleted: 0 };
+
+  const last = sheet.getLastRow();
+  if (last < 2) return { status: 'ok', deleted: 0 };
+
+  const ids = sheet.getRange(2, 1, last - 1, 1).getValues();
+  for (let i = 0; i < ids.length; i++) {
+    if (String(ids[i][0]) === String(p._id)) {
+      sheet.deleteRow(i + 2);
+      return { status: 'ok', deleted: 1 };
+    }
+  }
+  return { status: 'ok', deleted: 0 };
+}
+
+function handleQmsLoadAll(type) {
+  if (!SHEET_NAMES[type]) return [];
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheet = ss.getSheetByName(SHEET_NAMES[type]);
+  if (!sheet || sheet.getLastRow() < 2) return [];
+  const lastCol = sheet.getLastColumn();
+  const headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0].map(String);
+  const data = sheet.getRange(2, 1, sheet.getLastRow() - 1, lastCol).getValues();
+  const tz = 'Asia/Seoul';
+  return data.map(row => {
+    const obj = {};
+    headers.forEach((h, i) => {
+      let v = row[i];
+      if (v instanceof Date) v = Utilities.formatDate(v, tz, 'yyyy-MM-dd HH:mm:ss');
+      obj[h] = (v === null || v === undefined) ? '' : v;
+    });
+    return obj;
+  });
+}
+
+function buildQmsRow(type, p) {
+  const now = Utilities.formatDate(new Date(), 'Asia/Seoul', 'yyyy-MM-dd HH:mm:ss');
+  if (type === 'inspection') {
+    return [p._id, p.차종||'', p.품번||'', p.입고일||'', p.품명||'', p.규격||'',
+            p.재질||'', p.수량||'', p.수량판정||'', p.외관||'', p.외관치수||'',
+            p.종합판정||'', p.비고||'', now];
+  }
+  if (type === 'ncr') {
+    return [p._id, p.No||'', p.작성일||'', p.품명||'', p.품번||'', p.불량유형||'',
+            p.발생원인||'', p.대책내용||'', p.담당자||'',
+            JSON.stringify(p.beforeUrls || []),
+            JSON.stringify(p.afterUrls  || []),
+            now];
+  }
+  if (type === 'heat') {
+    const su = p.signUrls || ['','',''];
+    return [p._id, p.jobKey||'', p.차종||'', p.도번||'', p.발신||'', p.날짜||'',
+            p.연도1||'', p.연도2||'',
+            su[0]||'', su[1]||'', su[2]||'',
+            JSON.stringify(p.rows || []),
+            JSON.stringify(p.attUrls || []),
+            now];
+  }
+  return [];
+}
+
+function uploadPhotoArray(arr, recId, prefix) {
+  if (!Array.isArray(arr)) return [];
+  return arr.map((p, i) => {
+    if (!p) return null;
+    if (p.url && String(p.url).startsWith('http')) {
+      return { name: p.name || '', url: p.url, caption: p.caption || '' };
+    }
+    if (p.b64) {
+      const url = saveImageToDrive(p.b64, recId + '_' + i, prefix);
+      return { name: p.name || '', url: url, caption: p.caption || '' };
+    }
+    return null;
+  }).filter(Boolean);
+}
+
+function saveFileToDrive(base64DataUrl, originalName, formType) {
+  const parts = base64DataUrl.split(',');
+  const mimeType = parts[0].split(':')[1].split(';')[0];
+  const base64 = parts[1];
+  const ts = Utilities.formatDate(new Date(), 'Asia/Seoul', 'yyyyMMdd_HHmmss');
+  const safeName = String(originalName || 'file').replace(/[^\wㄱ-힝.\-]/g, '_').slice(0, 60);
+  const fileName = 'KTM_' + formType + '_' + ts + '_' + safeName;
+  const folder = DriveApp.getFolderById(DRIVE_FOLDER_ID);
+  const blob = Utilities.newBlob(Utilities.base64Decode(base64), mimeType, fileName);
+  const file = folder.createFile(blob);
+  file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+  return 'https://drive.google.com/uc?id=' + file.getId();
+}
+
+// ════════════════════════════════════════════════════════════
+// 3정5S 활동 평가 — upsert / delete / loadAll
+// 폴더 구조: {DRIVE_FOLDER_ID}/3정5S 평가/{YYYY-MM}/{구역}구역/
+// ════════════════════════════════════════════════════════════
+
+function getOrCreateSubFolder_(parentFolder, name) {
+  const it = parentFolder.getFoldersByName(name);
+  return it.hasNext() ? it.next() : parentFolder.createFolder(name);
+}
+
+function saveS5sImageToDrive_(base64DataUrl, evalDate, zone, kind) {
+  // kind: '지적' | '개선'
+  const parts    = base64DataUrl.split(',');
+  const mimeType = parts[0].split(':')[1].split(';')[0];
+  const base64   = parts[1];
+  const ext      = mimeType.indexOf('png') >= 0 ? 'png' : 'jpg';
+  const ymd      = evalDate || Utilities.formatDate(new Date(), 'Asia/Seoul', 'yyyy-MM-dd');
+  const ym       = ymd.substring(0, 7); // YYYY-MM
+  const fileName = 'KTM_3s5s_' + kind + '_' + ymd.replace(/-/g,'') + '_' + Date.now() + '.' + ext;
+
+  const root  = DriveApp.getFolderById(DRIVE_FOLDER_ID);
+  const lvl1  = getOrCreateSubFolder_(root, '3정5S 평가');
+  const lvl2  = getOrCreateSubFolder_(lvl1, ym);
+  const lvl3  = getOrCreateSubFolder_(lvl2, (zone || '') + '구역');
+
+  const blob = Utilities.newBlob(Utilities.base64Decode(base64), mimeType, fileName);
+  const file = lvl3.createFile(blob);
+  file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+  return 'https://drive.google.com/uc?export=view&id=' + file.getId();
+}
+
+function uploadS5sPhotos_(arr, evalDate, zone, kind) {
+  if (!Array.isArray(arr)) return [];
+  return arr.map(function(p) {
+    if (!p) return null;
+    if (p.url && String(p.url).indexOf('http') === 0) {
+      // 이미 업로드된 사진 — 그대로 유지
+      return { url: p.url, caption: p.caption || '', itemNo: p.itemNo || '' };
+    }
+    if (p.b64) {
+      const url = saveS5sImageToDrive_(p.b64, evalDate, zone, kind);
+      return { url: url, caption: p.caption || '', itemNo: p.itemNo || '' };
+    }
+    return null;
+  }).filter(Boolean);
+}
+
+function calcS5sGrade_(total) {
+  if (total >= 125) return 'A';
+  if (total >= 105) return 'B';
+  if (total >= 80)  return 'C';
+  return 'D';
+}
+
+function buildS5sRow_(p) {
+  const now = Utilities.formatDate(new Date(), 'Asia/Seoul', 'yyyy-MM-dd HH:mm:ss');
+  return [
+    p._id,
+    p.평가일 || '',
+    p.구역 || '',
+    p.평가자 || '',
+    p.관리담당정 || '',
+    p.관리담당부 || '',
+    JSON.stringify(p.점수 || {}),
+    p.합계 || 0,
+    p.등급 || '',
+    JSON.stringify(p.지적사진URLs || []),
+    JSON.stringify(p.개선사진URLs || []),
+    p.개선일자 || '',
+    p.비고 || '',
+    now
+  ];
+}
+
+function handleS5sUpsert(p) {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheetName = SHEET_NAMES.s5s;
+  const hdrs = SHEET_HEADERS.s5s;
+  let sheet = ss.getSheetByName(sheetName);
+  if (!sheet) sheet = ss.insertSheet(sheetName);
+
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(hdrs);
+    sheet.getRange(1, 1, 1, hdrs.length)
+         .setBackground('#1e3a5f').setFontColor('white').setFontWeight('bold');
+    sheet.setFrozenRows(1);
+  }
+
+  if (!p._id) p._id = 's5s_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+
+  // 기존 행 찾기 + 머지 (개선 사진만 업로드되는 경우 기존 데이터 보존)
+  const last = sheet.getLastRow();
+  let foundRow = -1;
+  let existing = null;
+  if (last > 1) {
+    const ids = sheet.getRange(2, 1, last - 1, 1).getValues();
+    for (let i = 0; i < ids.length; i++) {
+      if (String(ids[i][0]) === String(p._id)) { foundRow = i + 2; break; }
+    }
+    if (foundRow > 0) {
+      const rowVals = sheet.getRange(foundRow, 1, 1, hdrs.length).getValues()[0];
+      existing = {};
+      hdrs.forEach(function(h, i) { existing[h] = rowVals[i]; });
+    }
+  }
+
+  if (existing) {
+    if (!p.평가일)      p.평가일      = existing['평가일'] || '';
+    if (!p.구역)         p.구역         = existing['구역'] || '';
+    if (!p.평가자)      p.평가자      = existing['평가자'] || '';
+    if (!p.관리담당정) p.관리담당정 = existing['관리담당정'] || '';
+    if (!p.관리담당부) p.관리담당부 = existing['관리담당부'] || '';
+    if (!p.비고)         p.비고         = existing['비고'] || '';
+    if (!p.개선일자)   p.개선일자   = existing['개선일자'] || '';
+    if (!p.점수 || Object.keys(p.점수).length === 0) {
+      try { p.점수 = JSON.parse(existing['점수JSON'] || '{}'); } catch(e) { p.점수 = {}; }
+    }
+  }
+
+  // 합계·등급 서버 측 재계산
+  let total = 0;
+  if (p.점수 && typeof p.점수 === 'object') {
+    Object.keys(p.점수).forEach(function(k) {
+      const v = parseInt(p.점수[k], 10);
+      if (!isNaN(v)) total += v;
+    });
+  }
+  p.합계 = total;
+  p.등급 = calcS5sGrade_(total);
+
+  // 신규 사진만 업로드 (b64) — 기존 URL은 그대로 유지
+  const newBef = uploadS5sPhotos_(p.지적사진, p.평가일, p.구역, '지적');
+  const newAft = uploadS5sPhotos_(p.개선사진, p.개선일자 || p.평가일, p.구역, '개선');
+  let exBef = [], exAft = [];
+  if (existing) {
+    try { exBef = JSON.parse(existing['지적사진URLs'] || '[]'); } catch(e) {}
+    try { exAft = JSON.parse(existing['개선사진URLs'] || '[]'); } catch(e) {}
+  }
+  p.지적사진URLs = exBef.concat(newBef);
+  p.개선사진URLs = exAft.concat(newAft);
+
+  const row = buildS5sRow_(p);
+
+  if (foundRow > 0) {
+    sheet.getRange(foundRow, 1, 1, row.length).setValues([row]);
+  } else {
+    sheet.appendRow(row);
+  }
+
+  return {
+    status: 'ok',
+    _id: p._id,
+    합계: p.합계,
+    등급: p.등급,
+    지적사진URLs: p.지적사진URLs,
+    개선사진URLs: p.개선사진URLs
+  };
+}
+
+function handleS5sDelete(p) {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheet = ss.getSheetByName(SHEET_NAMES.s5s);
+  if (!sheet) return { status: 'ok', deleted: 0 };
+
+  const last = sheet.getLastRow();
+  if (last < 2) return { status: 'ok', deleted: 0 };
+
+  const ids = sheet.getRange(2, 1, last - 1, 1).getValues();
+  for (let i = 0; i < ids.length; i++) {
+    if (String(ids[i][0]) === String(p._id)) {
+      sheet.deleteRow(i + 2);
+      return { status: 'ok', deleted: 1 };
+    }
+  }
+  return { status: 'ok', deleted: 0 };
 }
