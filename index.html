@@ -361,6 +361,8 @@
         .s5s-hist-photos { display:flex; gap:6px; flex-wrap:wrap; }
         .s5s-hist-photos img { width:54px; height:54px; object-fit:cover; border-radius:6px; cursor:pointer; }
         .s5s-improve-btn { padding:7px 12px; background:#0ea5e9; color:white; border:none; border-radius:7px; font-size:11px; font-weight:800; cursor:pointer; margin-top:8px; }
+        .s5s-del-btn { padding:7px 12px; background:#fff; color:#dc2626; border:1.5px solid #fecaca; border-radius:7px; font-size:11px; font-weight:800; cursor:pointer; margin-top:8px; margin-left:6px; }
+        .s5s-del-btn:hover { background:#fef2f2; border-color:#dc2626; }
     </style>
 </head>
 <body>
@@ -2455,11 +2457,42 @@ async function s5sLoadHistory() {
             html +=   '<div class="s5s-hist-grade" style="background:' + gradeColor + '">' + grade + ' · ' + (r['합계'] || 0) + '점</div></div>';
             html +=   '<div class="s5s-hist-meta">평가자: ' + (r['평가자'] || '-') + ' · 관리담당: ' + (r['관리담당정'] || '-') + ' / ' + (r['관리담당부'] || '-') + '</div>';
             if (thumbHtml) html += '<div class="s5s-hist-photos">' + thumbHtml + '</div>';
+            html +=   '<button class="s5s-del-btn" onclick="s5sDeleteRecord(\'' + r['_id'] + '\',\'' + (r['구역'] || '') + '\',\'' + (r['평가일'] || '') + '\',' + (r['합계'] || 0) + ')">🗑️ 이 기록 삭제</button>';
             html += '</div>';
         });
         list.innerHTML = html;
     } catch(e) {
         list.innerHTML = '<div class="s5s-list-empty" style="color:#dc2626">조회 실패: ' + e.message + '</div>';
+    }
+}
+
+async function s5sDeleteRecord(id, zone, evalDate, total) {
+    if (!id) { alert('삭제 대상 ID가 없습니다.'); return; }
+    const msg = '⚠️ 다음 평가 기록을 삭제하시겠어요?\n\n'
+              + '   • 구역: ' + zone + '\n'
+              + '   • 평가일: ' + evalDate + '\n'
+              + '   • 합계: ' + total + '점\n\n'
+              + '시트 행이 영구 삭제됩니다.\n'
+              + '※ Google Drive에 저장된 사진 파일은 그대로 보존됩니다 (복구 안전망).\n\n'
+              + '정말 삭제할까요?';
+    if (!confirm(msg)) return;
+
+    try {
+        const res = await fetch(GS_URL, {
+            method: 'POST',
+            body: JSON.stringify({ formType: 's5s_delete', _id: id }),
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+        });
+        const json = await res.json();
+        if (json.status !== 'ok') throw new Error(json.message || '삭제 실패');
+        if ((json.deleted || 0) === 0) {
+            alert('해당 기록을 찾을 수 없습니다. 이미 삭제되었을 수 있어요.');
+        } else {
+            alert('✅ 삭제 완료.\n\n사진 파일은 Drive의 \'3정5S 평가/' + evalDate.substring(0,7) + '/' + zone + '구역/\' 폴더에 그대로 있습니다.\n필요 시 직접 정리하세요.');
+        }
+        s5sLoadHistory();
+    } catch(e) {
+        alert('❌ 삭제 실패: ' + e.message);
     }
 }
 
