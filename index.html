@@ -363,6 +363,39 @@
         .s5s-improve-btn { padding:7px 12px; background:#0ea5e9; color:white; border:none; border-radius:7px; font-size:11px; font-weight:800; cursor:pointer; margin-top:8px; }
         .s5s-del-btn { padding:7px 12px; background:#fff; color:#dc2626; border:1.5px solid #fecaca; border-radius:7px; font-size:11px; font-weight:800; cursor:pointer; margin-top:8px; margin-left:6px; }
         .s5s-del-btn:hover { background:#fef2f2; border-color:#dc2626; }
+
+        /* 도면 이미지 (PDF 원본) */
+        .s5s-map-img { width:100%; height:auto; display:block; border-radius:8px; border:1px solid #d1fae5; cursor:zoom-in; }
+
+        /* 이력조회 — PDF 체크시트 스타일 13항목 표 */
+        .s5s-hist-items { margin-top:10px; border:1px solid #e2e8f0; border-radius:8px; overflow:hidden; background:#fafbfc; }
+        .s5s-hist-item { padding:7px 9px; border-bottom:1px solid #eef2f6; }
+        .s5s-hist-item:last-child { border-bottom:none; }
+        .s5s-hist-item.low { background:#fef2f2; }
+        .hi-row { display:flex; align-items:center; gap:7px; }
+        .hi-cat { font-size:9px; font-weight:900; color:white; padding:2px 6px; border-radius:4px; flex-shrink:0; min-width:38px; text-align:center; }
+        .hi-cat.정위치 { background:#0ea5e9; }
+        .hi-cat.정품 { background:#8b5cf6; }
+        .hi-cat.정량 { background:#f59e0b; }
+        .hi-cat.정리 { background:#10b981; }
+        .hi-cat.정돈 { background:#3b82f6; }
+        .hi-cat.청결 { background:#ec4899; }
+        .hi-txt { flex:1; font-size:11px; color:#334155; line-height:1.35; }
+        .hi-txt b { color:#10b981; margin-right:2px; }
+        .hi-score { font-size:13px; font-weight:900; color:#10b981; min-width:24px; text-align:center; flex-shrink:0; font-family:'JetBrains Mono',monospace; }
+        .hi-score.s-2, .hi-score.s-4 { color:#dc2626; }
+        .hi-score.s-0 { color:#94a3b8; }
+        .hi-photos { display:flex; gap:5px; flex-wrap:wrap; margin-top:6px; margin-left:48px; }
+        .hi-photos img { width:50px; height:50px; object-fit:cover; border-radius:5px; cursor:pointer; border:2px solid #fecaca; }
+
+        /* 개선사진 섹션 */
+        .s5s-hist-improve { margin-top:10px; padding:9px 10px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; }
+        .hi-improve-title { font-size:11px; font-weight:900; color:#065f46; margin-bottom:6px; }
+        .hi-improve-photos { display:flex; gap:5px; flex-wrap:wrap; }
+        .hi-improve-photos img { width:54px; height:54px; object-fit:cover; border-radius:6px; cursor:pointer; border:2px solid #10b981; }
+
+        /* 비고 */
+        .hi-memo { margin-top:9px; padding:7px 10px; background:#fefce8; border:1px solid #fde68a; border-radius:6px; font-size:11px; color:#713f12; line-height:1.4; }
     </style>
 </head>
 <body>
@@ -980,40 +1013,11 @@
 
             <!-- ── TAB: 평가작성 ── -->
             <div id="s5s-tab-eval">
-                <!-- 평가구역 도면 -->
+                <!-- 평가구역 도면 (성우KTM 공식 도면) -->
                 <div class="s5s-map">
                     <div class="s5s-map-title">📍 3정5S 활동 평가 구역</div>
-                    <svg viewBox="0 0 360 260" xmlns="http://www.w3.org/2000/svg">
-                        <!-- 외곽 -->
-                        <rect x="5" y="5" width="350" height="250" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
-                        <!-- C구역 (좌상 - 금형적재대/NC) -->
-                        <rect class="s5s-zone-rect zone-C" x="10" y="10" width="200" height="120" rx="6" fill="#10b981" onclick="s5sSelectZone('C')"/>
-                        <text class="s5s-zone-label" x="110" y="58">C 구역</text>
-                        <text class="s5s-zone-sub" x="110" y="76">금형 적재대</text>
-                        <text class="s5s-zone-sub" x="110" y="90">NC 가공</text>
-                        <text class="s5s-zone-sub" x="110" y="104">밀링 / 콘도머신</text>
-                        <!-- B구역 (우상 - 연마/조립) -->
-                        <rect class="s5s-zone-rect zone-B" x="215" y="10" width="135" height="120" rx="6" fill="#3b82f6" onclick="s5sSelectZone('B')"/>
-                        <text class="s5s-zone-label" x="282" y="58">B 구역</text>
-                        <text class="s5s-zone-sub" x="282" y="76">연마 가공</text>
-                        <text class="s5s-zone-sub" x="282" y="90">조립</text>
-                        <text class="s5s-zone-sub" x="282" y="104">레디알 1~3</text>
-                        <!-- A구역 (좌하 - T/O 대기 출하) -->
-                        <rect class="s5s-zone-rect zone-A" x="10" y="135" width="200" height="115" rx="6" fill="#f97316" onclick="s5sSelectZone('A')"/>
-                        <text class="s5s-zone-label" x="110" y="180">A 구역</text>
-                        <text class="s5s-zone-sub" x="110" y="198">T/O 대기 출하</text>
-                        <text class="s5s-zone-sub" x="110" y="212">프레스 1~3</text>
-                        <text class="s5s-zone-sub" x="110" y="226">점소재 대기</text>
-                        <!-- D구역 (우하 - 사무실/수입검사) -->
-                        <rect class="s5s-zone-rect zone-D" x="215" y="135" width="135" height="115" rx="6" fill="#a855f7" onclick="s5sSelectZone('D')"/>
-                        <text class="s5s-zone-label" x="282" y="180">D 구역</text>
-                        <text class="s5s-zone-sub" x="282" y="198">사무실</text>
-                        <text class="s5s-zone-sub" x="282" y="212">수입검사</text>
-                        <text class="s5s-zone-sub" x="282" y="226">CCF/세면실</text>
-                        <!-- 정북 화살표 -->
-                        <text x="338" y="22" font-size="9" fill="#475569" font-weight="bold">N ↑</text>
-                    </svg>
-                    <div class="s5s-map-note">점검일정: <b>매월 2·4째 월요일</b> · 화장실: 공동관리</div>
+                    <img src="3s5s-map.png" alt="성우KTM 3정5S 활동 평가구역 도면" class="s5s-map-img" onclick="s5sPreviewPhoto('3s5s-map.png')">
+                    <div class="s5s-map-note">탭하면 크게 보기 · 점검일정: <b>매월 2·4째 월요일</b> · 화장실: 공동관리</div>
                 </div>
 
                 <!-- 구역 선택 버튼 -->
@@ -2434,7 +2438,7 @@ async function s5sLoadHistory() {
     try {
         const res = await fetch(GS_URL + '?action=loadAll&type=s5s');
         const json = await res.json();
-        const recs = (json.records || []).slice().reverse(); // 최신순
+        const recs = (json.records || []).slice().reverse();
         const zoneFilter = document.getElementById('s5s-hist-zone').value;
         const filtered = zoneFilter ? recs.filter(r => r['구역'] === zoneFilter) : recs;
         if (filtered.length === 0) {
@@ -2445,18 +2449,58 @@ async function s5sLoadHistory() {
         filtered.forEach(r => {
             const grade = r['등급'] || 'D';
             const gradeColor = grade === 'A' ? '#10b981' : grade === 'B' ? '#3b82f6' : grade === 'C' ? '#f59e0b' : '#dc2626';
-            let thumbHtml = '';
-            try {
-                const bef = JSON.parse(r['지적사진URLs'] || '[]');
-                const aft = JSON.parse(r['개선사진URLs'] || '[]');
-                bef.slice(0, 4).forEach(p => { thumbHtml += '<img src="' + s5sImgUrl(p.url) + '" title="지적사진" onclick="s5sPreviewPhoto(\'' + p.url + '\')">'; });
-                aft.slice(0, 4).forEach(p => { thumbHtml += '<img src="' + s5sImgUrl(p.url) + '" title="개선사진" style="border:2px solid #10b981" onclick="s5sPreviewPhoto(\'' + p.url + '\')">'; });
-            } catch(e) {}
+            let scores = {}, befArr = [], aftArr = [];
+            try { scores = JSON.parse(r['점수JSON'] || '{}'); } catch(e) {}
+            try { befArr = JSON.parse(r['지적사진URLs'] || '[]'); } catch(e) {}
+            try { aftArr = JSON.parse(r['개선사진URLs'] || '[]'); } catch(e) {}
+
+            // 항목별 지적사진 매핑 (itemNo로)
+            const photosByItem = {};
+            befArr.forEach(p => {
+                const no = parseInt(p.itemNo, 10);
+                if (no) { (photosByItem[no] = photosByItem[no] || []).push(p); }
+            });
+
             html += '<div class="s5s-hist-card ' + grade + '">';
             html +=   '<div class="s5s-hist-head"><div class="s5s-hist-zone">' + (r['구역'] || '?') + '구역 · ' + (r['평가일'] || '') + '</div>';
             html +=   '<div class="s5s-hist-grade" style="background:' + gradeColor + '">' + grade + ' · ' + (r['합계'] || 0) + '점</div></div>';
             html +=   '<div class="s5s-hist-meta">평가자: ' + (r['평가자'] || '-') + ' · 관리담당: ' + (r['관리담당정'] || '-') + ' / ' + (r['관리담당부'] || '-') + '</div>';
-            if (thumbHtml) html += '<div class="s5s-hist-photos">' + thumbHtml + '</div>';
+
+            // 13항목 점수표 (PDF 체크시트 스타일)
+            html +=   '<div class="s5s-hist-items">';
+            S5S_ITEMS.forEach(it => {
+                const score = parseInt(scores[it.no], 10);
+                const isLow = (score === 2 || score === 4);
+                html += '<div class="s5s-hist-item' + (isLow ? ' low' : '') + '">';
+                html +=   '<div class="hi-row">';
+                html +=     '<span class="hi-cat ' + it.cat + '">' + it.cat + '</span>';
+                html +=     '<span class="hi-txt"><b>' + it.no + '.</b> ' + it.txt + '</span>';
+                html +=     '<span class="hi-score s-' + (score || 0) + '">' + (isNaN(score) ? '-' : score) + '</span>';
+                html +=   '</div>';
+                // 2·4점이면 해당 항목 사진 표시
+                if (isLow && photosByItem[it.no] && photosByItem[it.no].length > 0) {
+                    html += '<div class="hi-photos">';
+                    photosByItem[it.no].forEach(p => {
+                        html += '<img src="' + s5sImgUrl(p.url) + '" title="지적사진" onclick="s5sPreviewPhoto(\'' + p.url + '\')">';
+                    });
+                    html += '</div>';
+                }
+                html += '</div>';
+            });
+            html +=   '</div>';
+
+            // 개선사진 별도 섹션
+            if (aftArr.length > 0) {
+                html += '<div class="s5s-hist-improve"><div class="hi-improve-title">✅ 개선 사진 (' + (r['개선일자'] || '-') + ')</div><div class="hi-improve-photos">';
+                aftArr.forEach(p => {
+                    html += '<img src="' + s5sImgUrl(p.url) + '" title="개선사진" onclick="s5sPreviewPhoto(\'' + p.url + '\')">';
+                });
+                html += '</div></div>';
+            }
+
+            // 비고
+            if (r['비고']) html += '<div class="hi-memo">📝 ' + r['비고'] + '</div>';
+
             html +=   '<button class="s5s-del-btn" onclick="s5sDeleteRecord(\'' + r['_id'] + '\',\'' + (r['구역'] || '') + '\',\'' + (r['평가일'] || '') + '\',' + (r['합계'] || 0) + ')">🗑️ 이 기록 삭제</button>';
             html += '</div>';
         });
