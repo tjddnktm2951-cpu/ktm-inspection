@@ -2331,8 +2331,26 @@ function s5sDelPhoto(no, idx) {
 }
 
 function s5sPreviewPhoto(src) {
+    const url = s5sImgUrl(src);
     const w = window.open('', '_blank');
-    w.document.write('<html><head><title>사진</title></head><body style="margin:0;background:#000;text-align:center"><img src="' + src + '" style="max-width:100vw;max-height:100vh;"></body></html>');
+    w.document.write('<html><head><title>사진</title></head><body style="margin:0;background:#000;text-align:center"><img src="' + url + '" style="max-width:100vw;max-height:100vh;"></body></html>');
+}
+
+// Google Drive 이미지 URL을 <img> 태그에서 보이는 형식으로 변환
+// 옛(차단): https://drive.google.com/uc?export=view&id=XXX  또는  ?id=XXX
+// 새(허용): https://lh3.googleusercontent.com/d/XXX
+function s5sImgUrl(url) {
+    if (!url) return '';
+    const s = String(url);
+    // 이미 새 형식이면 그대로
+    if (s.indexOf('lh3.googleusercontent.com') >= 0) return s;
+    // ?id=XXX 또는 &id=XXX 패턴
+    let m = s.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+    if (m) return 'https://lh3.googleusercontent.com/d/' + m[1];
+    // /d/XXX 패턴 (드라이브 공유 링크 형식)
+    m = s.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    if (m) return 'https://lh3.googleusercontent.com/d/' + m[1];
+    return s;
 }
 
 function s5sValidate() {
@@ -2429,8 +2447,8 @@ async function s5sLoadHistory() {
             try {
                 const bef = JSON.parse(r['지적사진URLs'] || '[]');
                 const aft = JSON.parse(r['개선사진URLs'] || '[]');
-                bef.slice(0, 4).forEach(p => { thumbHtml += '<img src="' + p.url + '" title="지적사진" onclick="s5sPreviewPhoto(\'' + p.url + '\')">'; });
-                aft.slice(0, 4).forEach(p => { thumbHtml += '<img src="' + p.url + '" title="개선사진" style="border:2px solid #10b981" onclick="s5sPreviewPhoto(\'' + p.url + '\')">'; });
+                bef.slice(0, 4).forEach(p => { thumbHtml += '<img src="' + s5sImgUrl(p.url) + '" title="지적사진" onclick="s5sPreviewPhoto(\'' + p.url + '\')">'; });
+                aft.slice(0, 4).forEach(p => { thumbHtml += '<img src="' + s5sImgUrl(p.url) + '" title="개선사진" style="border:2px solid #10b981" onclick="s5sPreviewPhoto(\'' + p.url + '\')">'; });
             } catch(e) {}
             html += '<div class="s5s-hist-card ' + grade + '">';
             html +=   '<div class="s5s-hist-head"><div class="s5s-hist-zone">' + (r['구역'] || '?') + '구역 · ' + (r['평가일'] || '') + '</div>';
@@ -2469,7 +2487,7 @@ async function s5sLoadImprove() {
             let thumbHtml = '';
             try {
                 const bef = JSON.parse(r['지적사진URLs'] || '[]');
-                bef.forEach(p => { thumbHtml += '<img src="' + p.url + '" onclick="s5sPreviewPhoto(\'' + p.url + '\')">'; });
+                bef.forEach(p => { thumbHtml += '<img src="' + s5sImgUrl(p.url) + '" onclick="s5sPreviewPhoto(\'' + p.url + '\')">'; });
             } catch(e) {}
             html += '<div class="s5s-hist-card ' + grade + '">';
             html +=   '<div class="s5s-hist-head"><div class="s5s-hist-zone">' + (r['구역'] || '?') + '구역 · ' + (r['평가일'] || '') + '</div>';
